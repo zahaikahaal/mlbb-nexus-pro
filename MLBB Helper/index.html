@@ -375,10 +375,137 @@
       .mobileNav {
         display: none;
       }
+      .theme-light {
+        --bg: #eaf1ff;
+        --bg2: #9bb7ff;
+        --card: #ffffffcc;
+        --text: #081326;
+        --muted: #31456b;
+        --line: #10204422;
+      }
+      .topActions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .iconBtn {
+        border: 1px solid var(--line);
+        background: #ffffff12;
+        color: #fff;
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+        font-weight: 900;
+      }
+      .theme-light .iconBtn {
+        color: #081326;
+      }
+      .progress {
+        height: 9px;
+        background: #ffffff22;
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 10px 0;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--green), var(--blue));
+        border-radius: 99px;
+      }
+      .miniGrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .metric {
+        padding: 18px;
+        border-radius: 18px;
+        background: #ffffff10;
+        border: 1px solid var(--line);
+      }
+      .metric b {
+        font-size: 26px;
+        display: block;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: #0009;
+        display: none;
+        place-items: center;
+        padding: 20px;
+      }
+      .modal.show {
+        display: grid;
+      }
+      .modalCard {
+        max-width: 760px;
+        width: 100%;
+        max-height: 90vh;
+        overflow: auto;
+        background: linear-gradient(135deg, #1b2d63, #0b1428);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: 0 30px 90px #000;
+      }
+      .compareBox {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 10001;
+        background: #081326;
+        color: #fff;
+        border: 1px solid var(--line);
+        padding: 14px 18px;
+        border-radius: 16px;
+        box-shadow: 0 20px 50px #0007;
+        display: none;
+      }
+      .toast.show {
+        display: block;
+      }
+      .floatTop {
+        position: fixed;
+        right: 22px;
+        bottom: 80px;
+        z-index: 30;
+        border: 0;
+        background: linear-gradient(135deg, var(--blue), var(--purple));
+        color: #fff;
+        border-radius: 999px;
+        width: 48px;
+        height: 48px;
+        font-weight: 1000;
+        cursor: pointer;
+        box-shadow: 0 15px 35px #0007;
+      }
+      .shake {
+        animation: shake 0.45s;
+      }
+      @keyframes shake {
+        25% {
+          transform: translateX(-4px);
+        }
+        50% {
+          transform: translateX(4px);
+        }
+        75% {
+          transform: translateX(-2px);
+        }
+      }
       @media (max-width: 1050px) {
         .hero,
         .two,
-        .draftCols {
+        .draftCols,
+        .compareBox {
           grid-template-columns: 1fr;
         }
         .grid {
@@ -432,8 +559,12 @@
           <a href="#heroes">Heroes</a><a href="#tier">Tier List</a
           ><a href="#counter">AI Counter</a><a href="#draft">Draft</a
           ><a href="#draftcounter">Draft Counter</a
+          ><a href="#compare">Compare</a><a href="#stats">Stats</a
           ><a href="#favorite">Favorite</a><a href="#items">Items</a>
         </nav>
+        <div class="topActions">
+          <button class="iconBtn" onclick="toggleTheme()">🌙/☀️</button>
+        </div>
       </div>
     </header>
     <main>
@@ -444,9 +575,9 @@
           >
           <h1>MLBB Strategy Dashboard Pro.</h1>
           <p>
-            Website database Mobile Legends bergaya profesional untuk mencari
-            hero, counter, tier list, static winrate, emblem, talent,
-            rekomendasi item full build, favorite hero, dan simulasi draft.
+            Website Mobile Legends bergaya profesional untuk mencari hero,
+            counter, tier list, static winrate, emblem, talent, rekomendasi item
+            full build, favorite hero, dan simulasi draft.
           </p>
           <div class="btns">
             <a class="btn primary" href="#counter">Coba AI Counter</a
@@ -458,11 +589,11 @@
           <div class="stat">Total Heroes <b id="totalHero">132</b></div>
           <div class="stat">Active Items <b id="totalItem">51</b></div>
           <div class="stat">Favorite Heroes <b id="favCount">0</b></div>
-          <div class="stat">Database Mode <b>Local</b></div>
+          <div class="stat">Pro Features <b>Final</b></div>
         </aside>
       </section>
       <section id="heroes" class="wrap section">
-        <h2>Hero Database</h2>
+        <h2>Hero List</h2>
         <p class="sub">
           Cari berdasarkan nama hero, role, lane, tier, counter, item, emblem,
           atau rekomendasi build.
@@ -555,6 +686,39 @@
           <div id="draftCounterResult" class="panel"></div>
         </div>
       </section>
+
+      <section id="compare" class="wrap section">
+        <h2>Hero Compare</h2>
+        <p class="sub">
+          Bandingin dua hero dari winrate, pick rate, role, lane, counter, dan
+          full build.
+        </p>
+        <div class="panel">
+          <div class="controls">
+            <select id="compareA" class="select"></select
+            ><select id="compareB" class="select"></select
+            ><button class="btn primary" onclick="compareHeroes()">
+              Bandingkan</button
+            ><button class="btn" onclick="randomCompare()">Random</button>
+          </div>
+          <div id="compareResult" class="compareBox"></div>
+        </div>
+      </section>
+      <section id="stats" class="wrap section">
+        <h2>Meta Stats</h2>
+        <p class="sub">
+          Ringkasan role, lane, tier, dan rekomendasi pick cepat.
+        </p>
+        <div class="panel">
+          <div id="statsBox" class="miniGrid"></div>
+          <div class="btns">
+            <button class="btn primary" onclick="smartRecommend()">
+              Rekomendasi Pick Cepat
+            </button>
+          </div>
+          <div id="smartResult" class="panel"></div>
+        </div>
+      </section>
       <section id="favorite" class="wrap section">
         <h2>Favorite Hero</h2>
         <p class="sub">Hero favorit tersimpan di browser kamu.</p>
@@ -574,6 +738,13 @@
         </div>
       </section>
     </main>
+    <div id="heroModal" class="modal" onclick="closeModal(event)">
+      <div class="modalCard" id="modalContent"></div>
+    </div>
+    <div id="toast" class="toast">Copied</div>
+    <button class="floatTop" onclick="scrollTo({ top: 0, behavior: 'smooth' })">
+      ↑
+    </button>
     <footer class="footer">
       © MLBB Nexus Pro • Built for strategy, draft, counter, and item
       recommendation.
@@ -919,6 +1090,15 @@
           "enemyDraftPick",
           heroes.map((h) => h.name),
         );
+        fillSelect(
+          "compareA",
+          heroes.map((h) => h.name),
+        );
+        fillSelect(
+          "compareB",
+          heroes.map((h) => h.name),
+        );
+        $("compareB").selectedIndex = 1;
         ["search", "roleFilter", "laneFilter", "tierFilter"].forEach((id) =>
           $(id).addEventListener("input", renderHeroes),
         );
@@ -926,12 +1106,14 @@
         renderTier();
         renderFav();
         renderItems();
+        renderStats();
+        compareHeroes();
       }
       function fillSelect(id, arr) {
         $(id).innerHTML = arr.map((x) => `<option>${x}</option>`).join("");
       }
       function heroCard(h) {
-        return `<article class="card"><div class="avatar">${h.name[0]}</div><div class="row"><span class="chip">${h.role}</span><span class="chip gold">Tier ${h.tier}</span></div><div class="name">${h.name}</div><div class="meta">${h.role} • ${h.lane}<br>Winrate ${h.winrate}% • Pick ${h.pick}%<br>${h.emblem} • ${h.talent}</div><div class="chips"><button class="mini" onclick="toggleFav('${h.name.replaceAll("'", "\\'")}')">${favorites.includes(h.name) ? "★ Favorited" : "☆ Favorite"}</button><span class="chip">${h.winrate}% WR</span></div><div class="chips"><span class="chip">Hero Counter</span>${h.counters.map((c) => `<span class="chip red">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Item Counter</span>${h.itemCounters.map((c) => `<span class="chip green">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Full Build</span>${h.build.map((c) => `<span class="chip green">${c}</span>`).join("")}</div></article>`;
+        return `<article class="card"><div class="avatar" onclick="openHero('${h.name.replaceAll("'", "\\'")}')">${h.name[0]}</div><div class="row"><span class="chip">${h.role}</span><span class="chip gold">Tier ${h.tier}</span></div><div class="name">${h.name}</div><div class="meta">${h.role} • ${h.lane}<br>Winrate ${h.winrate}% • Pick ${h.pick}%<br>${h.emblem} • ${h.talent}</div><div class="progress"><span style="width:${Math.min(100, Number(h.winrate) * 1.8)}%"></span></div><div class="chips"><button class="mini" onclick="toggleFav('${h.name.replaceAll("'", "\\'")}')">${favorites.includes(h.name) ? "★ Favorited" : "☆ Favorite"}</button><button class="mini" onclick="copyBuild('${h.name.replaceAll("'", "\\'")}')">Copy Build</button><button class="mini" onclick="openHero('${h.name.replaceAll("'", "\\'")}')">Detail</button><span class="chip">${h.winrate}% WR</span></div><div class="chips"><span class="chip">Hero Counter</span>${h.counters.map((c) => `<span class="chip red">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Item Counter</span>${h.itemCounters.map((c) => `<span class="chip green">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Full Build</span>${h.build.map((c) => `<span class="chip green">${c}</span>`).join("")}</div></article>`;
       }
       function filtered() {
         const q = $("search").value.toLowerCase(),
@@ -1041,6 +1223,75 @@
           .map((x) => `<span class="chip">${x}</span>`)
           .join("");
       }
+
+      function toast(msg) {
+        const t = $("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 1600);
+      }
+      function toggleTheme() {
+        document.body.classList.toggle("theme-light");
+        localStorage.setItem(
+          "mlbbTheme",
+          document.body.classList.contains("theme-light") ? "light" : "dark",
+        );
+      }
+      if (localStorage.getItem("mlbbTheme") === "light")
+        document.body.classList.add("theme-light");
+      function copyBuild(name) {
+        const h = heroes.find((x) => x.name === name);
+        navigator.clipboard?.writeText(
+          `${h.name} build: ${h.build.join(" > ")}`,
+        );
+        toast("Build berhasil dicopy ✅");
+      }
+      function openHero(name) {
+        const h = heroes.find((x) => x.name === name);
+        $("modalContent").innerHTML =
+          `<div class="row"><h2>${h.name}</h2><button class="iconBtn" onclick="document.getElementById('heroModal').classList.remove('show')">✕</button></div><div class="avatar">${h.name[0]}</div><p class="sub">${h.role} • ${h.lane} • Tier ${h.tier}</p><div class="progress"><span style="width:${Math.min(100, Number(h.winrate) * 1.8)}%"></span></div><div class="chips"><span class="chip">Winrate ${h.winrate}%</span><span class="chip">Pick ${h.pick}%</span><span class="chip">${h.emblem}</span><span class="chip">${h.talent}</span></div><h3>Full Build</h3><div class="chips">${h.build.map((x) => `<span class="chip green">${x}</span>`).join("")}</div><h3>Hero Counter</h3><div class="chips">${h.counters.map((x) => `<span class="chip red">${x}</span>`).join("")}</div><h3>Item Counter</h3><div class="chips">${h.itemCounters.map((x) => `<span class="chip green">${x}</span>`).join("")}</div><div class="btns"><button class="btn primary" onclick="copyBuild('${h.name.replaceAll("'", "\\'")}')">Copy Build</button></div>`;
+        $("heroModal").classList.add("show");
+      }
+      function closeModal(e) {
+        if (e.target.id === "heroModal") e.target.classList.remove("show");
+      }
+      function compareCard(h) {
+        return `<div class="panel"><h3>${h.name}</h3><p class="sub">${h.role} • ${h.lane} • Tier ${h.tier}</p><div class="metric"><b>${h.winrate}%</b>Winrate</div><div class="progress"><span style="width:${Math.min(100, Number(h.winrate) * 1.8)}%"></span></div><div class="chips"><span class="chip">Full Build</span>${h.build.map((x) => `<span class="chip green">${x}</span>`).join("")}</div><div class="chips"><span class="chip">Counter</span>${h.counters.map((x) => `<span class="chip red">${x}</span>`).join("")}</div></div>`;
+      }
+      function compareHeroes() {
+        const a = heroes.find((h) => h.name === $("compareA").value),
+          b = heroes.find((h) => h.name === $("compareB").value);
+        $("compareResult").innerHTML = compareCard(a) + compareCard(b);
+      }
+      function randomCompare() {
+        $("compareA").selectedIndex = Math.floor(Math.random() * heroes.length);
+        $("compareB").selectedIndex = Math.floor(Math.random() * heroes.length);
+        compareHeroes();
+      }
+      function renderStats() {
+        const top = [...heroes]
+          .sort((a, b) => b.winrate - a.winrate)
+          .slice(0, 3);
+        const roleText = roles
+          .map((r) => `${r}: ${heroes.filter((h) => h.role === r).length}`)
+          .join("<br>");
+        const laneText = lanes
+          .map((l) => `${l}: ${heroes.filter((h) => h.lane === l).length}`)
+          .join("<br>");
+        $("statsBox").innerHTML =
+          `<div class="metric"><b>${heroes.length}</b>Total Hero</div><div class="metric"><b>${items.length}</b>Total Item</div><div class="metric"><b>${favorites.length}</b>Favorite</div><div class="metric"><b>Role</b>${roleText}</div><div class="metric"><b>Lane</b>${laneText}</div><div class="metric"><b>Top WR</b>${top.map((h) => `${h.name} ${h.winrate}%`).join("<br>")}</div>`;
+      }
+      function smartRecommend() {
+        const role =
+          $("roleFilter").value === "Semua Role" ? null : $("roleFilter").value;
+        let pool = heroes
+          .filter((h) => !role || h.role === role)
+          .sort((a, b) => b.winrate - a.winrate)
+          .slice(0, 6);
+        $("smartResult").innerHTML =
+          `<h3>Rekomendasi Pick Cepat</h3><div class="chips">${pool.map((h) => `<span class="chip green">${h.name} • ${h.role} • ${h.winrate}% WR</span>`).join("")}</div>`;
+      }
+
       init();
       renderDraft();
       renderEnemyDraft();
