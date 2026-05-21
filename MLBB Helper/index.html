@@ -3,1268 +3,1047 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MLBB Nexus Pro | AI Counter, Draft, Tier List & Database</title>
-    <meta
-      name="description"
-      content="MLBB Nexus Pro by Kael Husein Haekal: hero database, AI counter recommendation, draft simulator, draft counter, tier list, static winrate, dan favorite hero."
-    />
+    <title>MLBB Nexus Pro</title>
     <style>
       :root {
-        --bg: #06101f;
-        --bg2: #0b1f3a;
-        --card: rgba(255, 255, 255, 0.075);
-        --card2: rgba(255, 255, 255, 0.045);
-        --line: rgba(255, 255, 255, 0.12);
-        --text: #edf7ff;
-        --muted: #a8bed4;
-        --blue: #50a7ff;
-        --violet: #8b5cf6;
-        --gold: #f7c948;
-        --red: #fb7185;
-        --green: #34d399;
-        --cyan: #67e8f9;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+        --bg: #0b1428;
+        --bg2: #1b2d63;
+        --card: #354c84cc;
+        --line: #ffffff22;
+        --text: #f6f8ff;
+        --muted: #b7c9eb;
+        --blue: #5aa0ff;
+        --purple: #8167ff;
+        --green: #39d9a0;
+        --red: #ff8da1;
+        --gold: #ffd36b;
       }
       * {
         box-sizing: border-box;
-        margin: 0;
-        padding: 0;
       }
       html {
         scroll-behavior: smooth;
       }
       body {
+        margin: 0;
         font-family:
           Inter,
-          ui-sans-serif,
           system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
+          Segoe UI,
           Arial,
           sans-serif;
-        background:
-          radial-gradient(
-            circle at 15% 4%,
-            rgba(80, 167, 255, 0.28),
-            transparent 28%
-          ),
-          radial-gradient(
-            circle at 85% 0%,
-            rgba(139, 92, 246, 0.22),
-            transparent 34%
-          ),
-          linear-gradient(180deg, var(--bg), var(--bg2));
+        background: linear-gradient(135deg, var(--bg), var(--bg2));
         color: var(--text);
-        min-height: 100vh;
+        overflow-x: hidden;
       }
-      a {
-        text-decoration: none;
-        color: inherit;
+      .hide {
+        display: none !important;
       }
-      .container {
-        width: min(1240px, 92%);
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 30%, #284aa0, #071022 68%);
+      }
+      .loader {
+        text-align: center;
+      }
+      .logoBig {
+        width: 92px;
+        height: 92px;
+        border-radius: 28px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--blue), var(--purple));
+        font-size: 42px;
         margin: auto;
+        box-shadow: 0 0 35px #6b7cffaa;
+        animation: pulse 1.3s infinite;
       }
-      .nav {
+      .loader h1 {
+        font-size: 28px;
+      }
+      .bar {
+        width: 260px;
+        height: 10px;
+        background: #ffffff22;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .bar span {
+        display: block;
+        height: 100%;
+        width: 70%;
+        background: linear-gradient(90deg, var(--blue), var(--purple));
+        animation: load 1.4s infinite;
+      }
+      @keyframes load {
+        0% {
+          transform: translateX(-120%);
+        }
+        100% {
+          transform: translateX(160%);
+        }
+      }
+      @keyframes pulse {
+        50% {
+          transform: scale(1.08);
+        }
+      }
+      header {
         position: sticky;
         top: 0;
-        z-index: 50;
-        background: rgba(6, 16, 31, 0.82);
-        border-bottom: 1px solid var(--line);
+        z-index: 20;
+        background: #081326ee;
         backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--line);
       }
-      .nav-in {
-        height: 76px;
+      .nav {
+        max-width: 1280px;
+        margin: auto;
+        padding: 16px 22px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 18px;
+        gap: 20px;
       }
       .brand {
         display: flex;
         align-items: center;
-        gap: 12px;
-        font-weight: 950;
+        gap: 13px;
+        font-weight: 900;
+        font-size: 20px;
       }
-      .badge {
-        width: 44px;
-        height: 44px;
-        border-radius: 16px;
+      .logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 17px;
+        background: linear-gradient(135deg, var(--blue), var(--purple));
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, var(--blue), var(--violet));
-        box-shadow: 0 12px 40px rgba(80, 167, 255, 0.32);
       }
-      .links {
+      .menu {
         display: flex;
-        gap: 16px;
-        color: var(--muted);
-        font-weight: 850;
-        font-size: 13px;
+        gap: 18px;
+        flex-wrap: wrap;
       }
-      .links a:hover {
+      .menu a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .menu a:hover {
         color: white;
       }
-      .hero-section {
-        padding: 68px 0 36px;
+      .wrap {
+        max-width: 1280px;
+        margin: auto;
+        padding: 70px 22px;
+      }
+      .hero {
         display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 28px;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 40px;
         align-items: center;
       }
       .pill {
         display: inline-flex;
-        padding: 8px 12px;
+        border: 1px solid #5c8fe966;
+        background: #2b579966;
+        color: #d7e8ff;
+        padding: 12px 18px;
         border-radius: 999px;
-        background: rgba(80, 167, 255, 0.12);
-        border: 1px solid rgba(80, 167, 255, 0.28);
-        color: #cfeaff;
         font-weight: 900;
-        font-size: 13px;
       }
-      h1 {
-        font-size: clamp(38px, 6vw, 74px);
-        line-height: 0.95;
-        letter-spacing: -2.5px;
-        margin: 18px 0;
-      }
-      .grad {
-        background: linear-gradient(90deg, #fff, #8fd0ff, #ddd6fe);
+      .hero h1 {
+        font-size: clamp(44px, 7vw, 88px);
+        line-height: 0.98;
+        margin: 25px 0;
+        background: linear-gradient(90deg, #fff, #88d0ff, #c8b8ff);
         -webkit-background-clip: text;
-        background-clip: text;
         color: transparent;
       }
-      .lead {
+      .hero p {
+        font-size: 21px;
+        line-height: 1.75;
         color: var(--muted);
-        font-size: 18px;
-        line-height: 1.7;
-        max-width: 780px;
+        max-width: 760px;
       }
-      .actions {
+      .btns {
         display: flex;
-        gap: 12px;
+        gap: 14px;
         flex-wrap: wrap;
-        margin-top: 26px;
+        margin-top: 28px;
       }
       .btn {
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.06);
-        color: white;
-        padding: 12px 16px;
-        border-radius: 14px;
-        font-weight: 950;
+        background: #ffffff10;
+        color: #fff;
+        border-radius: 15px;
+        padding: 15px 22px;
+        font-weight: 900;
         cursor: pointer;
-        transition: 0.2s;
-        font-size: 14px;
+        text-decoration: none;
+      }
+      .btn.primary {
+        border: 0;
+        background: linear-gradient(135deg, var(--blue), var(--purple));
       }
       .btn:hover {
         transform: translateY(-2px);
-      }
-      .btn.primary {
-        background: linear-gradient(135deg, var(--blue), var(--violet));
-        border: 0;
-      }
-      .btn.danger {
-        background: rgba(251, 113, 133, 0.14);
-        border-color: rgba(251, 113, 133, 0.35);
-      }
-      .btn.success {
-        background: rgba(52, 211, 153, 0.14);
-        border-color: rgba(52, 211, 153, 0.35);
-        color: #bbf7d0;
-      }
-      .panel {
-        background: linear-gradient(180deg, var(--card), var(--card2));
-        border: 1px solid var(--line);
-        border-radius: 26px;
-        padding: 20px;
-        box-shadow: var(--shadow);
+        box-shadow: 0 12px 26px #0005;
       }
       .stats {
-        display: grid;
-        gap: 12px;
+        background: #ffffff12;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 30px 70px #0005;
       }
       .stat {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px;
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.055);
+        margin: 12px 0;
+        padding: 20px;
+        border-radius: 20px;
+        background: #ffffff10;
         border: 1px solid var(--line);
+        font-size: 18px;
         color: var(--muted);
       }
-      .stat strong {
+      .stat b {
         color: white;
-        font-size: 20px;
-      }
-      .section {
-        padding: 38px 0;
-      }
-      .head {
-        display: flex;
-        align-items: end;
-        justify-content: space-between;
-        gap: 20px;
-        margin-bottom: 18px;
+        font-size: 26px;
       }
       h2 {
-        font-size: 32px;
-        letter-spacing: -0.8px;
+        font-size: 36px;
+        margin: 0 0 10px;
       }
-      .desc {
+      .sub {
         color: var(--muted);
-        margin-top: 7px;
-        line-height: 1.6;
+        font-size: 18px;
       }
-      .filters {
+      .controls {
         display: grid;
-        grid-template-columns: 1fr 160px 160px 160px;
-        gap: 12px;
-        margin-bottom: 18px;
+        grid-template-columns: 1fr 180px 180px 180px;
+        gap: 14px;
+        margin: 24px 0;
       }
-      input,
-      select,
-      textarea {
+      .input,
+      .select {
         width: 100%;
+        padding: 15px 17px;
+        border-radius: 16px;
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.065);
-        color: white;
-        padding: 13px 14px;
-        border-radius: 15px;
-        outline: none;
-        font-family: inherit;
+        outline: 0;
+        background: #ffffff12;
+        color: #fff;
       }
-      select option {
-        background: #0a1729;
+      .select option {
+        background: #172852;
       }
       .grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-      }
-      .grid.two {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .grid.three {
-        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
       }
       .card {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(180deg, var(--card), var(--card2));
+        background: linear-gradient(180deg, #49639bcc, #2e477acc);
         border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 16px;
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
+        border-radius: 25px;
+        padding: 18px;
+        box-shadow: 0 18px 50px #0004;
+        transition: 0.25s;
       }
-      .card:before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          circle at top right,
-          rgba(80, 167, 255, 0.14),
-          transparent 37%
-        );
-        pointer-events: none;
-      }
-      .top {
-        position: relative;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: flex-start;
+      .card:hover {
+        transform: translateY(-7px) scale(1.01);
+        box-shadow: 0 30px 70px #0008;
       }
       .avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 16px;
+        height: 140px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #5aa0ff, #7863d9);
         display: grid;
         place-items: center;
+        font-size: 58px;
         font-weight: 1000;
-        background: linear-gradient(
-          135deg,
-          rgba(80, 167, 255, 0.95),
-          rgba(139, 92, 246, 0.95)
-        );
       }
-      .hero-img-wrap {
-        height: 145px;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: linear-gradient(
-          135deg,
-          rgba(80, 167, 255, 0.22),
-          rgba(139, 92, 246, 0.18)
-        );
-        margin-bottom: 14px;
-        position: relative;
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 14px 0;
       }
-      .hero-fallback {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        place-items: center;
-        font-size: 54px;
+      .name {
+        font-size: 22px;
         font-weight: 1000;
-        color: white;
-        background:
-          radial-gradient(
-            circle at 30% 20%,
-            rgba(255, 255, 255, 0.18),
-            transparent 34%
-          ),
-          linear-gradient(
-            135deg,
-            rgba(80, 167, 255, 0.55),
-            rgba(139, 92, 246, 0.42)
-          );
       }
-      .tag {
-        display: inline-flex;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.07);
-        border-radius: 999px;
-        padding: 6px 8px;
-        font-size: 11px;
-        font-weight: 950;
-        color: #dbeafe;
-      }
-      .tierS {
-        background: rgba(247, 201, 72, 0.18);
-        color: #fde68a;
-        border-color: rgba(247, 201, 72, 0.35);
-      }
-      .tierA {
-        background: rgba(52, 211, 153, 0.12);
-        color: #bbf7d0;
-        border-color: rgba(52, 211, 153, 0.28);
-      }
-      .tierB {
-        background: rgba(103, 232, 249, 0.11);
-        color: #cffafe;
-        border-color: rgba(103, 232, 249, 0.24);
-      }
-      h3 {
-        font-size: 20px;
-        margin: 12px 0 6px;
-      }
-      .small {
+      .meta {
         color: var(--muted);
-        line-height: 1.5;
-        font-size: 13px;
+        line-height: 1.6;
       }
       .chips {
-        position: relative;
         display: flex;
         flex-wrap: wrap;
-        gap: 7px;
-        margin-top: 11px;
+        gap: 8px;
+        margin-top: 12px;
       }
-      .chip {
+      .chip,
+      .mini {
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.055);
-        color: #dbeafe;
+        background: #ffffff12;
+        color: #fff;
         border-radius: 999px;
-        padding: 6px 8px;
-        font-size: 11px;
-        font-weight: 800;
-        cursor: default;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 900;
       }
-      .counter {
-        background: rgba(251, 113, 133, 0.13);
-        border-color: rgba(251, 113, 133, 0.32);
-        color: #fecdd3;
+      .green {
+        background: #128d7044;
+        color: #92ffd9;
+        border-color: #2ee0a966;
       }
-      .item {
-        background: rgba(52, 211, 153, 0.1);
-        border-color: rgba(52, 211, 153, 0.28);
-        color: #bbf7d0;
+      .red {
+        background: #9b405544;
+        color: #ffc0cb;
+        border-color: #ff8da166;
       }
-      .suggested {
-        background: rgba(247, 201, 72, 0.13);
-        border-color: rgba(247, 201, 72, 0.32);
-        color: #fde68a;
+      .gold {
+        background: #8f743544;
+        color: #ffe59b;
+        border-color: #ffd36b66;
+      }
+      .panel {
+        background: #ffffff10;
+        border: 1px solid var(--line);
+        border-radius: 25px;
+        padding: 22px;
+        margin-top: 20px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .draftCols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      .slot {
+        min-height: 58px;
+        border: 1px dashed #ffffff44;
+        border-radius: 16px;
+        padding: 13px;
+        margin: 10px 0;
+        background: #ffffff0c;
       }
       .tabs {
         display: flex;
-        flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 16px;
+        flex-wrap: wrap;
+        margin: 15px 0;
       }
       .tab {
+        padding: 11px 15px;
+        border-radius: 13px;
+        background: #ffffff12;
         border: 1px solid var(--line);
-        color: var(--muted);
-        background: rgba(255, 255, 255, 0.055);
-        padding: 10px 13px;
-        border-radius: 999px;
-        font-weight: 950;
         cursor: pointer;
-        font-family: inherit;
-        font-size: 13px;
+        font-weight: 900;
       }
       .tab.active {
-        color: white;
-        border: 0;
-        background: linear-gradient(135deg, var(--blue), var(--violet));
+        background: linear-gradient(135deg, var(--blue), var(--purple));
       }
-      .draft-slot {
-        min-height: 54px;
-        border: 1px dashed rgba(255, 255, 255, 0.22);
-        border-radius: 16px;
-        padding: 13px;
-        color: var(--muted);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-      }
-      .enemy-slot {
-        min-height: 54px;
-        border: 1px dashed rgba(251, 113, 133, 0.3);
-        border-radius: 16px;
-        padding: 13px;
-        color: #fecdd3;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        background: rgba(251, 113, 133, 0.04);
+      .section {
+        padding-top: 70px;
       }
       .footer {
-        margin-top: 40px;
-        padding: 34px 0;
-        border-top: 1px solid var(--line);
-        color: var(--muted);
-        line-height: 1.7;
         text-align: center;
+        color: var(--muted);
+        padding: 40px;
       }
-      .credit {
-        color: white;
-        font-weight: 1000;
+      .empty {
+        color: var(--muted);
+        padding: 20px;
       }
-      .hidden {
-        display: none !important;
-      }
-      .notice {
-        padding: 14px 16px;
-        border-radius: 18px;
-        background: rgba(247, 201, 72, 0.1);
-        border: 1px solid rgba(247, 201, 72, 0.25);
-        color: #fde68a;
-        line-height: 1.6;
-      }
-      .notice.green {
-        background: rgba(52, 211, 153, 0.1);
-        border-color: rgba(52, 211, 153, 0.25);
-        color: #bbf7d0;
-      }
-      .notice.red {
-        background: rgba(251, 113, 133, 0.1);
-        border-color: rgba(251, 113, 133, 0.25);
-        color: #fecdd3;
-      }
-      .fav-btn {
-        position: relative;
-        z-index: 2;
-        cursor: pointer;
-      }
-      .fav-on {
-        color: #facc15;
-        border-color: rgba(250, 204, 21, 0.45);
-        background: rgba(250, 204, 21, 0.12);
-      }
-      .remove-btn {
-        cursor: pointer;
-        color: var(--red);
-        font-weight: 900;
-        font-size: 12px;
-        background: rgba(251, 113, 133, 0.12);
-        border: 1px solid rgba(251, 113, 133, 0.28);
-        border-radius: 999px;
-        padding: 4px 10px;
-      }
-      .score-bar {
-        height: 8px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        overflow: hidden;
-        margin-top: 6px;
-      }
-      .score-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(
-          90deg,
-          var(--red),
-          var(--gold),
-          var(--green)
-        );
-      }
-      .counter-score {
-        font-size: 28px;
-        font-weight: 1000;
-        margin: 8px 0 2px;
-      }
-      .inline-btns {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
-        flex-wrap: wrap;
+      .mobileNav {
+        display: none;
       }
       @media (max-width: 1050px) {
+        .hero,
+        .two,
+        .draftCols {
+          grid-template-columns: 1fr;
+        }
         .grid {
           grid-template-columns: repeat(2, 1fr);
         }
-        .hero-section {
-          grid-template-columns: 1fr;
-        }
-        .filters {
+        .controls {
           grid-template-columns: 1fr 1fr;
         }
-        .links {
+        .menu {
           display: none;
         }
+        .mobileNav {
+          display: block;
+        }
       }
-      @media (max-width: 650px) {
+      @media (max-width: 620px) {
         .grid,
-        .grid.two,
-        .grid.three,
-        .filters {
+        .controls {
           grid-template-columns: 1fr;
         }
-        h1 {
-          font-size: 42px;
+        .wrap {
+          padding: 45px 16px;
+        }
+        .hero h1 {
+          font-size: 46px;
+        }
+        .stat {
+          font-size: 15px;
+        }
+        .avatar {
+          height: 120px;
         }
       }
     </style>
   </head>
   <body>
-    <nav class="nav">
-      <div class="container nav-in">
-        <a class="brand" href="#"
-          ><span class="badge">⚔️</span><span>MLBB Nexus Pro</span></a
-        >
-        <div class="links">
-          <a href="#heroes">Heroes</a>
-          <a href="#tierlist">Tier List</a>
-          <a href="#ai">AI Counter</a>
-          <a href="#draft">Draft</a>
-          <a href="#draftcounter">Draft Counter</a>
-          <a href="#favorites">Favorite</a>
-        </div>
+    <div id="splash">
+      <div class="loader">
+        <div class="logoBig">⚔️</div>
+        <h1>MLBB Nexus Pro</h1>
+        <div class="bar"><span></span></div>
       </div>
-    </nav>
+    </div>
+    <header>
+      <div class="nav">
+        <div class="brand">
+          <div class="logo">⚔️</div>
+          MLBB Nexus Pro
+        </div>
+        <nav class="menu">
+          <a href="#heroes">Heroes</a><a href="#tier">Tier List</a
+          ><a href="#counter">AI Counter</a><a href="#draft">Draft</a
+          ><a href="#draftcounter">Draft Counter</a
+          ><a href="#favorite">Favorite</a><a href="#items">Items</a>
+        </nav>
+      </div>
+    </header>
     <main>
-      <section class="container hero-section">
+      <section class="wrap hero">
         <div>
           <span class="pill"
-            >AI Counter • Draft Simulator • Draft Counter • Static Winrate</span
+            >AI Counter • Draft Simulator • Static Winrate</span
           >
-          <h1><span class="grad">MLBB Strategy</span><br />Dashboard Pro.</h1>
-          <p class="lead">
+          <h1>MLBB Strategy Dashboard Pro.</h1>
+          <p>
             Website database Mobile Legends bergaya profesional untuk mencari
-            hero, counter, tier list, static winrate, favorite hero, draft
-            simulator, draft counter hero, dan rekomendasi counter berbasis rule
-            AI.
+            hero, counter, tier list, static winrate, emblem, talent,
+            rekomendasi item full build, favorite hero, dan simulasi draft.
           </p>
-          <div class="actions">
-            <a class="btn primary" href="#draftcounter">Draft Counter</a>
-            <a class="btn" href="#ai">AI Counter</a>
-            <a class="btn" href="#draft">Draft Simulator</a>
-            <a class="btn" href="#tierlist">Tier List</a>
+          <div class="btns">
+            <a class="btn primary" href="#counter">Coba AI Counter</a
+            ><a class="btn" href="#draft">Buka Draft Simulator</a
+            ><a class="btn" href="#tier">Lihat Tier List</a>
           </div>
         </div>
-        <div class="panel stats">
-          <div class="stat">
-            <span>Total Heroes</span><strong id="heroCount">0</strong>
-          </div>
-          <div class="stat">
-            <span>Active Items</span><strong id="itemCount">0</strong>
-          </div>
-          <div class="stat">
-            <span>Favorite Heroes</span><strong id="favCount">0</strong>
-          </div>
-          <div class="stat">
-            <span>Counter Rules</span><strong>6 Roles</strong>
-          </div>
-        </div>
+        <aside class="stats">
+          <div class="stat">Total Heroes <b id="totalHero">132</b></div>
+          <div class="stat">Active Items <b id="totalItem">51</b></div>
+          <div class="stat">Favorite Heroes <b id="favCount">0</b></div>
+          <div class="stat">Database Mode <b>Local</b></div>
+        </aside>
       </section>
-
-      <section id="heroes" class="container section">
-        <div class="head">
-          <div>
-            <h2>Hero Database</h2>
-            <p class="desc">
-              Cari berdasarkan nama hero, role, lane, tier, counter, item, atau
-              emblem.
-            </p>
-          </div>
-        </div>
-        <div class="filters">
-          <input id="search" placeholder="Cari hero / item / counter..." />
-          <select id="role">
-            <option value="all">Semua Role</option>
-          </select>
-          <select id="lane">
-            <option value="all">Semua Lane</option>
-          </select>
-          <select id="tier">
-            <option value="all">Semua Tier</option>
+      <section id="heroes" class="wrap section">
+        <h2>Hero Database</h2>
+        <p class="sub">
+          Cari berdasarkan nama hero, role, lane, tier, counter, item, emblem,
+          atau rekomendasi build.
+        </p>
+        <div class="controls">
+          <input
+            id="search"
+            class="input"
+            placeholder="Cari hero / item / counter..."
+          /><select id="roleFilter" class="select">
+            <option>Semua Role</option></select
+          ><select id="laneFilter" class="select">
+            <option>Semua Lane</option></select
+          ><select id="tierFilter" class="select">
+            <option>Semua Tier</option>
             <option>S</option>
             <option>A</option>
             <option>B</option>
+            <option>C</option>
           </select>
         </div>
         <div id="heroGrid" class="grid"></div>
       </section>
-
-      <section id="tierlist" class="container section">
-        <div class="head">
-          <div>
-            <h2>Tier List</h2>
-            <p class="desc">
-              Tier list otomatis berdasarkan tier, winrate statis, dan role.
-            </p>
-          </div>
-        </div>
-        <div class="tabs" id="tierTabs"></div>
-        <div id="tierGrid" class="grid"></div>
+      <section id="tier" class="wrap section">
+        <h2>Tier List</h2>
+        <p class="sub">Tier list otomatis dari data hero.</p>
+        <div id="tierBox"></div>
       </section>
-
-      <section id="ai" class="container section">
-        <div class="head">
+      <section id="counter" class="wrap section">
+        <h2>AI Counter Hero</h2>
+        <p class="sub">
+          Pilih hero lawan, sistem akan menampilkan hero counter, item counter,
+          dan full item yang disarankan.
+        </p>
+        <div class="panel two">
           <div>
-            <h2>AI Counter Recommendation</h2>
-            <p class="desc">
-              Pilih hero lawan, sistem akan merekomendasikan hero counter, item
-              counter, dan strategi draft.
-            </p>
-          </div>
-        </div>
-        <div class="grid two">
-          <div class="panel">
-            <select id="enemyHero"></select>
-            <br /><br />
-            <button class="btn primary" onclick="runAIRecommendation()">
-              Generate Counter
-            </button>
-            <br /><br />
-            <div class="notice">
-              AI di sini adalah rule-based recommendation yang berjalan langsung
-              di browser, bukan AI server berbayar.
-            </div>
-          </div>
-          <div id="aiResult" class="panel"></div>
-        </div>
-      </section>
-
-      <section id="draft" class="container section">
-        <div class="head">
-          <div>
-            <h2>Draft Simulator</h2>
-            <p class="desc">
-              Simulasikan komposisi tim dan cek kelemahan draft.
-            </p>
-          </div>
-        </div>
-        <div class="grid two">
-          <div class="panel">
-            <select id="draftPick"></select>
-            <br /><br />
-            <div class="inline-btns">
-              <button class="btn primary" onclick="addDraftPick()">
-                Tambah ke Tim
-              </button>
-              <button class="btn danger" onclick="clearDraft()">
-                Reset Draft
+            <select id="enemyHero" class="select"></select>
+            <div class="btns">
+              <button class="btn primary" onclick="runCounter()">
+                Cari Counter
               </button>
             </div>
-            <br />
-            <div id="draftSlots" class="grid two"></div>
           </div>
-          <div id="draftAnalysis" class="panel"></div>
+          <div id="counterResult" class="empty">Pilih hero lawan dulu.</div>
         </div>
       </section>
-
-      <!-- DRAFT COUNTER HERO -->
-      <section id="draftcounter" class="container section">
-        <div class="head">
-          <div>
-            <h2>Draft Counter Hero</h2>
-            <p class="desc">
-              Masukkan 1-5 hero lawan, lalu dapatkan rekomendasi hero counter
-              terbaik beserta skor efektivitas dan item build.
-            </p>
+      <section id="draft" class="wrap section">
+        <h2>Draft Simulator Pick-Ban</h2>
+        <p class="sub">
+          Simulasi pick dan ban sederhana untuk tim biru dan merah.
+        </p>
+        <div class="panel">
+          <div class="controls">
+            <select id="draftHero" class="select"></select
+            ><select id="draftTeam" class="select">
+              <option>Blue Team</option>
+              <option>Red Team</option></select
+            ><select id="draftAction" class="select">
+              <option>Pick</option>
+              <option>Ban</option></select
+            ><button class="btn primary" onclick="addDraft()">Tambah</button>
           </div>
-        </div>
-        <div class="grid two">
-          <div class="panel">
-            <h3>Tim Lawan</h3>
-            <p class="small">Pilih hero lawan satu per satu (maksimal 5).</p>
-            <br />
-            <select id="enemyDraftPick"></select>
-            <div class="inline-btns">
-              <button class="btn danger" onclick="addEnemyDraft()">
-                + Tambah Lawan
-              </button>
-              <button class="btn" onclick="clearEnemyDraft()">Reset</button>
+          <div class="draftCols">
+            <div>
+              <h3>Blue Team</h3>
+              <div id="blueDraft"></div>
             </div>
-            <br />
-            <div id="enemyDraftSlots" class="grid two"></div>
-            <br />
-            <button
-              class="btn primary"
-              onclick="analyzeDraftCounter()"
-              style="width: 100%; padding: 14px; font-size: 16px"
-            >
-              Analisis & Cari Counter
-            </button>
+            <div>
+              <h3>Red Team</h3>
+              <div id="redDraft"></div>
+            </div>
           </div>
-          <div id="draftCounterResult" class="panel">
-            <h3>Hasil Analisis</h3>
-            <p class="small">
-              Masukkan hero lawan dan klik "Analisis & Cari Counter" untuk
-              melihat rekomendasi.
-            </p>
-          </div>
+          <button class="btn" onclick="resetDraft()">Reset Draft</button>
         </div>
       </section>
-
-      <section id="favorites" class="container section">
-        <div class="head">
-          <div>
-            <h2>Favorite Hero</h2>
-            <p class="desc">
-              Hero favorit tersimpan di browser kamu memakai localStorage.
-            </p>
+      <section id="draftcounter" class="wrap section">
+        <h2>Draft Counter Simulator</h2>
+        <p class="sub">
+          Masukkan komposisi musuh, lalu sistem memberi rekomendasi counter
+          draft.
+        </p>
+        <div class="panel">
+          <select id="enemyDraftPick" class="select"></select>
+          <div class="btns">
+            <button class="btn primary" onclick="addEnemyDraft()">
+              Tambah Hero Musuh</button
+            ><button class="btn" onclick="resetEnemyDraft()">Reset</button>
           </div>
+          <div id="enemyDraftList" class="chips"></div>
+          <div id="draftCounterResult" class="panel"></div>
         </div>
+      </section>
+      <section id="favorite" class="wrap section">
+        <h2>Favorite Hero</h2>
+        <p class="sub">Hero favorit tersimpan di browser kamu.</p>
         <div id="favoriteGrid" class="grid"></div>
       </section>
-
-      <section id="items" class="container section">
-        <div class="head">
-          <div>
-            <h2>51 Active Items</h2>
-            <p class="desc">Item aktif untuk build dan counter matchup.</p>
+      <section id="items" class="wrap section">
+        <h2>Item, Emblem, Talent</h2>
+        <div class="two">
+          <div class="panel">
+            <h3>51 Item</h3>
+            <div id="itemList" class="chips"></div>
+          </div>
+          <div class="panel">
+            <h3>7 Emblem & 24 Talent</h3>
+            <div id="emblemList" class="chips"></div>
           </div>
         </div>
-        <div id="itemGrid" class="grid"></div>
       </section>
     </main>
     <footer class="footer">
-      <div class="container">
-        © 2026 MLBB Nexus Pro. Fan-made database, tidak berafiliasi dengan
-        Moonton/Mobile Legends: Bang Bang.<br />Website created by
-        <span class="credit">Kael Husein Haekal</span> 🚀
-      </div>
+      © MLBB Nexus Pro • Built for strategy, draft, counter, and item
+      recommendation.
     </footer>
-
     <script>
-      const heroNames =
-        "Miya|Balmond|Saber|Alice|Nana|Tigreal|Alucard|Karina|Akai|Franco|Bane|Bruno|Clint|Rafaela|Eudora|Zilong|Fanny|Layla|Minotaur|Lolita|Hayabusa|Freya|Gord|Natalia|Kagura|Chou|Sun|Alpha|Ruby|Yi Sun-shin|Moskov|Johnson|Cyclops|Estes|Hilda|Aurora|Lapu-Lapu|Vexana|Roger|Karrie|Gatotkaca|Harley|Irithel|Grock|Argus|Odette|Lancelot|Diggie|Hylos|Zhask|Helcurt|Pharsa|Lesley|Jawhead|Angela|Gusion|Valir|Martis|Uranus|Hanabi|Chang'e|Kaja|Selena|Aldous|Claude|Vale|Leomord|Lunox|Hanzo|Belerick|Kimmy|Thamuz|Harith|Minsitthar|Kadita|Faramis|Badang|Khufra|Granger|Guinevere|Esmeralda|Terizla|X.Borg|Ling|Dyrroth|Lylia|Baxia|Masha|Wanwan|Silvanna|Carmilla|Cecilion|Atlas|Popol and Kupa|Yu Zhong|Luo Yi|Benedetta|Khaleed|Barats|Brody|Yve|Mathilda|Paquito|Gloo|Beatrix|Phoveus|Natan|Aulus|Aamon|Valentina|Edith|Floryn|Yin|Melissa|Xavier|Julian|Fredrinn|Joy|Novaria|Arlott|Ixia|Nolan|Cici|Chip|Zhuxin|Suyou|Lukas|Kalea|Zetian|Obsidia|Sora|Marcel".split(
-          "|",
-        );
-      const roleMap = {
-        Tank: "Alice,Tigreal,Akai,Franco,Minotaur,Johnson,Gatotkaca,Grock,Hylos,Uranus,Belerick,Khufra,Atlas,Gloo,Edith,Fredrinn,Chip",
-        Support:
-          "Rafaela,Lolita,Estes,Diggie,Angela,Kaja,Faramis,Carmilla,Mathilda,Floryn,Kalea,Marcel",
-        Mage: "Nana,Eudora,Gord,Kagura,Cyclops,Aurora,Vexana,Odette,Zhask,Pharsa,Valir,Chang'e,Selena,Vale,Lunox,Harith,Kadita,Lylia,Cecilion,Luo Yi,Yve,Valentina,Xavier,Novaria,Zhuxin,Zetian",
-        Marksman:
-          "Miya,Bruno,Clint,Layla,Yi Sun-shin,Moskov,Karrie,Irithel,Lesley,Hanabi,Claude,Kimmy,Wanwan,Granger,Popol and Kupa,Brody,Beatrix,Natan,Melissa,Ixia,Obsidia",
-        Assassin:
-          "Saber,Karina,Alucard,Fanny,Hayabusa,Natalia,Harley,Lancelot,Helcurt,Gusion,Ling,Benedetta,Aamon,Julian,Nolan,Suyou,Sora",
-        Fighter:
-          "Balmond,Bane,Zilong,Freya,Chou,Sun,Alpha,Ruby,Hilda,Lapu-Lapu,Roger,Argus,Jawhead,Martis,Leomord,Hanzo,Thamuz,Minsitthar,Badang,Guinevere,Esmeralda,Terizla,X.Borg,Dyrroth,Baxia,Masha,Silvanna,Yu Zhong,Khaleed,Barats,Paquito,Phoveus,Aulus,Yin,Joy,Arlott,Cici,Lukas",
+      const heroNames = [
+        "Miya",
+        "Balmond",
+        "Saber",
+        "Alice",
+        "Nana",
+        "Tigreal",
+        "Alucard",
+        "Karina",
+        "Akai",
+        "Franco",
+        "Bane",
+        "Bruno",
+        "Clint",
+        "Rafaela",
+        "Eudora",
+        "Zilong",
+        "Fanny",
+        "Layla",
+        "Minotaur",
+        "Lolita",
+        "Hayabusa",
+        "Freya",
+        "Gord",
+        "Natalia",
+        "Kagura",
+        "Chou",
+        "Sun",
+        "Alpha",
+        "Ruby",
+        "Yi Sun-shin",
+        "Moskov",
+        "Johnson",
+        "Cyclops",
+        "Estes",
+        "Hilda",
+        "Aurora",
+        "Lapu-Lapu",
+        "Vexana",
+        "Roger",
+        "Karrie",
+        "Gatotkaca",
+        "Harley",
+        "Irithel",
+        "Grock",
+        "Argus",
+        "Odette",
+        "Lancelot",
+        "Diggie",
+        "Hylos",
+        "Zhask",
+        "Helcurt",
+        "Pharsa",
+        "Lesley",
+        "Jawhead",
+        "Angela",
+        "Gusion",
+        "Valir",
+        "Martis",
+        "Uranus",
+        "Hanabi",
+        "Chang’e",
+        "Kaja",
+        "Selena",
+        "Aldous",
+        "Claude",
+        "Vale",
+        "Leomord",
+        "Lunox",
+        "Hanzo",
+        "Belerick",
+        "Kimmy",
+        "Thamuz",
+        "Harith",
+        "Minsitthar",
+        "Kadita",
+        "Faramis",
+        "Badang",
+        "Khufra",
+        "Granger",
+        "Guinevere",
+        "Esmeralda",
+        "Terizla",
+        "X.Borg",
+        "Ling",
+        "Dyrroth",
+        "Lylia",
+        "Baxia",
+        "Masha",
+        "Wanwan",
+        "Silvanna",
+        "Cecilion",
+        "Carmilla",
+        "Atlas",
+        "Popol and Kupa",
+        "Yu Zhong",
+        "Luo Yi",
+        "Benedetta",
+        "Khaleed",
+        "Barats",
+        "Brody",
+        "Yve",
+        "Mathilda",
+        "Paquito",
+        "Gloo",
+        "Beatrix",
+        "Phoveus",
+        "Natan",
+        "Aulus",
+        "Aamon",
+        "Valentina",
+        "Edith",
+        "Floryn",
+        "Yin",
+        "Melissa",
+        "Xavier",
+        "Julian",
+        "Fredrinn",
+        "Joy",
+        "Novaria",
+        "Arlott",
+        "Ixia",
+        "Nolan",
+        "Cici",
+        "Chip",
+        "Zhuxin",
+        "Suyou",
+        "Lukas",
+        "Kalea",
+        "Marcel",
+      ];
+      const roles = [
+        "Marksman",
+        "Fighter",
+        "Assassin",
+        "Mage",
+        "Tank",
+        "Support",
+      ];
+      const lanes = ["Gold", "EXP", "Jungle", "Mid", "Roam"];
+      const items = [
+        "Blade of Despair",
+        "Endless Battle",
+        "Berserker’s Fury",
+        "Haas’s Claws",
+        "Malefic Roar",
+        "Demon Hunter Sword",
+        "Golden Staff",
+        "Windtalker",
+        "Scarlet Phantom",
+        "Corrosion Scythe",
+        "Sea Halberd",
+        "Hunter Strike",
+        "War Axe",
+        "Blade of the Heptaseas",
+        "Rose Gold Meteor",
+        "Great Dragon Spear",
+        "Bloodlust Axe",
+        "Queen’s Wings",
+        "Immortality",
+        "Antique Cuirass",
+        "Athena’s Shield",
+        "Radiant Armor",
+        "Dominance Ice",
+        "Blade Armor",
+        "Cursed Helmet",
+        "Thunder Belt",
+        "Oracle",
+        "Guardian Helmet",
+        "Twilight Armor",
+        "Brute Force Breastplate",
+        "Clock of Destiny",
+        "Lightning Truncheon",
+        "Holy Crystal",
+        "Divine Glaive",
+        "Genius Wand",
+        "Glowing Wand",
+        "Ice Queen Wand",
+        "Blood Wings",
+        "Concentrated Energy",
+        "Fleeting Time",
+        "Necklace of Durance",
+        "Winter Crown",
+        "Starlium Scythe",
+        "Flask of the Oasis",
+        "Demon Shoes",
+        "Magic Shoes",
+        "Tough Boots",
+        "Warrior Boots",
+        "Swift Boots",
+        "Arcane Boots",
+        "Rapid Boots",
+      ];
+      const emblems = [
+        "Common",
+        "Tank",
+        "Assassin",
+        "Mage",
+        "Fighter",
+        "Marksman",
+        "Support",
+      ];
+      const talents = [
+        "Vitality",
+        "Firmness",
+        "Agility",
+        "Rupture",
+        "Swift",
+        "Inspire",
+        "Fatal",
+        "Thrill",
+        "Seasoned Hunter",
+        "Tenacity",
+        "Brave Smite",
+        "Quantum Charge",
+        "Master Assassin",
+        "Wilderness Blessing",
+        "Bargain Hunter",
+        "Pull Yourself Together",
+        "Weapon Master",
+        "Impure Rage",
+        "Lethal Ignition",
+        "War Cry",
+        "Festival of Blood",
+        "Weakness Finder",
+        "Focusing Mark",
+        "Concussive Blast",
+      ];
+      const roleBuilds = {
+        Marksman: [
+          "Swift Boots",
+          "Corrosion Scythe",
+          "Demon Hunter Sword",
+          "Golden Staff",
+          "Malefic Roar",
+          "Wind of Nature",
+        ],
+        Mage: [
+          "Arcane Boots",
+          "Clock of Destiny",
+          "Lightning Truncheon",
+          "Genius Wand",
+          "Holy Crystal",
+          "Divine Glaive",
+        ],
+        Assassin: [
+          "Tough Boots",
+          "Blade of the Heptaseas",
+          "Hunter Strike",
+          "Endless Battle",
+          "Blade of Despair",
+          "Immortality",
+        ],
+        Fighter: [
+          "Tough Boots",
+          "War Axe",
+          "Hunter Strike",
+          "Queen’s Wings",
+          "Malefic Roar",
+          "Immortality",
+        ],
+        Tank: [
+          "Tough Boots",
+          "Dominance Ice",
+          "Antique Cuirass",
+          "Athena’s Shield",
+          "Immortality",
+          "Guardian Helmet",
+        ],
+        Support: [
+          "Magic Shoes",
+          "Flask of the Oasis",
+          "Dominance Ice",
+          "Oracle",
+          "Immortality",
+          "Athena’s Shield",
+        ],
       };
-      function getRole(n) {
-        for (const r in roleMap)
-          if (roleMap[r].split(",").includes(n)) return r;
-        return "Fighter";
-      }
-      const laneByRole = {
-        Tank: "Roam",
-        Support: "Roam",
-        Mage: "Mid",
-        Marksman: "Gold",
-        Assassin: "Jungle",
-        Fighter: "EXP",
+      const itemCountersByRole = {
+        Marksman: ["Blade Armor", "Dominance Ice", "Wind of Nature"],
+        Mage: ["Athena’s Shield", "Radiant Armor", "Winter Crown"],
+        Assassin: ["Antique Cuirass", "Immortality", "Wind of Nature"],
+        Fighter: ["Dominance Ice", "Sea Halberd", "Antique Cuirass"],
+        Tank: ["Demon Hunter Sword", "Malefic Roar", "Divine Glaive"],
+        Support: ["Necklace of Durance", "Dominance Ice", "Sea Halberd"],
+      };
+      const roleCounter = {
+        Marksman: ["Assassin", "Mage"],
+        Mage: ["Assassin", "Tank"],
+        Assassin: ["Tank", "Fighter"],
+        Fighter: ["Marksman", "Mage"],
+        Tank: ["Marksman", "Mage"],
+        Support: ["Assassin", "Fighter"],
       };
       const heroes = heroNames.map((name, i) => {
-        const role = getRole(name);
-        const tier = i % 5 === 0 ? "S" : i % 3 === 0 ? "A" : "B";
-        const wr = (48 + ((i * 7) % 110) / 10).toFixed(1);
+        const role = roles[i % roles.length],
+          lane = lanes[i % lanes.length],
+          tier =
+            i % 9 === 0 ? "S" : i % 3 === 0 ? "A" : i % 3 === 1 ? "B" : "C";
         return {
-          id: i + 1,
           name,
           role,
-          lane: laneByRole[role],
+          lane,
           tier,
-          winrate: Number(wr),
-          pickrate: Number((5 + ((i * 3) % 200) / 10).toFixed(1)),
+          winrate: (48 + (i % 50) / 10).toFixed(1),
+          pick: (3 + (i % 55) / 10).toFixed(1),
+          emblem: emblems[i % emblems.length],
+          talent: talents[i % talents.length],
+          build: roleBuilds[role],
+          itemCounters: itemCountersByRole[role],
         };
       });
-      const items =
-        "War Axe|Blade of Despair|Hunter Strike|Malefic Roar|Sea Halberd|Demon Hunter Sword|Corrosion Scythe|Golden Staff|Berserker's Fury|Windtalker|Haas's Claws|Endless Battle|Rose Gold Meteor|Great Dragon Spear|Blade of Heptaseas|Swift Crossbow|Magic Blade|Clock of Destiny|Lightning Truncheon|Holy Crystal|Divine Glaive|Genius Wand|Glowing Wand|Enchanted Talisman|Concentrated Energy|Blood Wings|Starlium Scythe|Feather of Heaven|Winter Crown|Ice Queen Wand|Fleeting Time|Dominance Ice|Athena Shield|Radiant Armor|Antique Cuirass|Blade Armor|Immortality|Guardian Helmet|Oracle|Cursed Helmet|Thunder Belt|Queen's Wings|Brute Force Breastplate|Twilight Armor|Tough Boots|Warrior Boots|Magic Shoes|Rapid Boots|Demon Shoes|Arcane Boots|Swift Boots"
-          .split("|")
-          .map((name, i) => ({
-            name,
-            type:
-              i < 17
-                ? "Attack"
-                : i < 31
-                  ? "Magic"
-                  : i < 44
-                    ? "Defense"
-                    : "Movement",
-            use: [
-              "Core damage",
-              "Burst counter",
-              "Anti tank",
-              "Anti heal",
-              "Survive burst",
-              "Rotation cepat",
-            ][i % 6],
-          }));
-      const roleCounters = {
-        Assassin: {
-          heroes: ["Khufra", "Kaja", "Franco", "Saber", "Minsitthar", "Lolita"],
-          items: ["Antique Cuirass", "Winter Crown", "Immortality"],
-          note: "Gunakan instant CC, suppress, dan jangan biarkan assassin masuk backline.",
-        },
-        Marksman: {
-          heroes: [
-            "Lolita",
-            "Belerick",
-            "Natalia",
-            "Saber",
-            "Khufra",
-            "Franco",
-          ],
-          items: ["Blade Armor", "Dominance Ice", "Antique Cuirass"],
-          note: "Tekan gold lane dan paksa war sebelum late game.",
-        },
-        Mage: {
-          heroes: ["Lolita", "Chou", "Saber", "Kaja", "Natalia", "Khufra"],
-          items: ["Athena Shield", "Radiant Armor", "Winter Crown"],
-          note: "Tunggu mage buang skill utama sebelum engage.",
-        },
-        Tank: {
-          heroes: ["Karrie", "Lunox", "Dyrroth", "X.Borg", "Valir", "Lylia"],
-          items: ["Demon Hunter Sword", "Malefic Roar", "Divine Glaive"],
-          note: "Pakai penetration, true damage, dan kite frontline.",
-        },
-        Fighter: {
-          heroes: ["Valir", "Karrie", "Baxia", "Dyrroth", "Lunox", "Lylia"],
-          items: ["Dominance Ice", "Sea Halberd", "Antique Cuirass"],
-          note: "Kurangi sustain dan jangan duel panjang tanpa anti-heal.",
-        },
-        Support: {
-          heroes: ["Baxia", "Luo Yi", "Saber", "Natalia", "Valir", "Dyrroth"],
-          items: ["Sea Halberd", "Dominance Ice", "Antique Cuirass"],
-          note: "Prioritaskan anti-heal dan pick-off support sebelum war.",
-        },
-      };
-      /* Skor tambahan jika hero X counter role Y */
-      const counterBonus = {
-        Khufra: { Assassin: 3, Fighter: 1 },
-        Kaja: { Assassin: 3, Mage: 1 },
-        Franco: { Assassin: 3, Marksman: 2 },
-        Lolita: { Mage: 3, Marksman: 3, Assassin: 1 },
-        Belerick: { Marksman: 3, Fighter: 1 },
-        Natalia: { Mage: 3, Support: 2, Marksman: 1 },
-        Saber: { Mage: 3, Assassin: 2, Marksman: 1 },
-        Minsitthar: { Assassin: 3, Fighter: 1 },
-        Karrie: { Tank: 3, Fighter: 2 },
-        Lunox: { Tank: 2, Fighter: 3, Mage: 1 },
-        Dyrroth: { Tank: 2, Fighter: 3, Support: 1 },
-        "X.Borg": { Tank: 3, Fighter: 2 },
-        Valir: { Fighter: 3, Support: 2, Assassin: 1 },
-        Baxia: { Fighter: 2, Support: 3, Tank: 1 },
-        "Luo Yi": { Support: 2, Mage: 1 },
-        Lylia: { Tank: 2, Fighter: 2 },
-        Chou: { Mage: 2, Assassin: 2 },
-        Gusion: { Mage: 3, Marksman: 2 },
-        Lancelot: { Mage: 3, Assassin: 2 },
-        Ling: { Mage: 3, Marksman: 2 },
-        Hayabusa: { Mage: 3, Support: 1 },
-        Aldous: { Tank: 2, Fighter: 2 },
-        Claude: { Tank: 2, Fighter: 2 },
-        Wanwan: { Tank: 2 },
-        Lesley: { Mage: 1, Marksman: 1 },
-        Hanabi: { Tank: 1, Fighter: 1 },
-        Kimmy: { Tank: 2, Fighter: 1 },
-        Granger: { Tank: 2, Fighter: 1 },
-        Pharsa: { Fighter: 2, Tank: 1 },
-        Cyclops: { Fighter: 2, Assassin: 1 },
-        Eudora: { Fighter: 2, Marksman: 1 },
-        Kagura: { Fighter: 2, Assassin: 1 },
-        Aurora: { Fighter: 3, Assassin: 2 },
-        Helcurt: { Mage: 3, Support: 1 },
-      };
-
-      let favorites = JSON.parse(localStorage.getItem("mlbbFavorites") || "[]");
-      let draft = JSON.parse(localStorage.getItem("mlbbDraft") || "[]");
-      let enemyDraft = JSON.parse(
-        localStorage.getItem("mlbbEnemyDraft") || "[]",
-      );
-
-      const $ = (id) => document.getElementById(id);
-      function unique(a) {
-        return [...new Set(a)].sort();
-      }
-      function tierClass(t) {
-        return t === "S" ? "tierS" : t === "A" ? "tierA" : "tierB";
-      }
-      function emblemFor(h) {
-        return h.role === "Tank"
-          ? "Tank • Brave Smite"
-          : h.role === "Assassin"
-            ? "Assassin • Killing Spree"
-            : h.role === "Mage"
-              ? "Mage • Lethal Ignition"
-              : h.role === "Marksman"
-                ? "Marksman • Weakness Finder"
-                : h.role === "Support"
-                  ? "Support • Focusing Mark"
-                  : "Fighter • Festival of Blood";
-      }
-      function cData(h) {
-        return roleCounters[h.role] || roleCounters.Fighter;
-      }
-      function isFav(n) {
-        return favorites.includes(n);
-      }
-
-      function cardHero(h) {
-        const c = cData(h);
-        return `<article class="card"><div class="hero-img-wrap"><div class="hero-fallback">${h.name[0]}</div></div><div class="top"><div class="avatar">${h.name[0]}</div><span class="tag ${tierClass(h.tier)}">Tier ${h.tier}</span></div><h3>${h.name}</h3><p class="small">${h.role} • ${h.lane}<br/>Winrate ${h.winrate}% • Pick ${h.pickrate}%<br/>${emblemFor(h)}</p><div class="chips"><button class="chip fav-btn ${isFav(h.name) ? "fav-on" : ""}" onclick="toggleFavorite('${h.name}')">★ Favorite</button><span class="chip">${h.winrate}% WR</span></div><div class="chips"><span class="tag">Hero Counter</span>${c.heroes
+      heroes.forEach((h) => {
+        h.counters = heroes
+          .filter((x) => roleCounter[h.role].includes(x.role))
           .slice(0, 4)
-          .map((x) => `<span class="chip counter">${x}</span>`)
-          .join(
-            "",
-          )}</div><div class="chips"><span class="tag">Item Counter</span>${c.items.map((x) => `<span class="chip item">${x}</span>`).join("")}</div></article>`;
-      }
-
-      function setupOptions() {
-        unique(heroes.map((h) => h.role)).forEach(
-          (r) => ($("role").innerHTML += `<option>${r}</option>`),
+          .map((x) => x.name);
+      });
+      let favorites = JSON.parse(localStorage.getItem("mlbbFav") || "[]"),
+        draft = { blue: [], red: [] },
+        enemyDraft = [];
+      const $ = (id) => document.getElementById(id);
+      setTimeout(() => $("splash").classList.add("hide"), 900);
+      function init() {
+        $("totalHero").textContent = heroes.length;
+        $("totalItem").textContent = items.length;
+        fillSelect("roleFilter", ["Semua Role", ...roles]);
+        fillSelect("laneFilter", ["Semua Lane", ...lanes]);
+        fillSelect(
+          "enemyHero",
+          heroes.map((h) => h.name),
         );
-        unique(heroes.map((h) => h.lane)).forEach(
-          (l) => ($("lane").innerHTML += `<option>${l}</option>`),
+        fillSelect(
+          "draftHero",
+          heroes.map((h) => h.name),
         );
-        heroes.forEach((h) => {
-          $("enemyHero").innerHTML += `<option>${h.name}</option>`;
-          $("draftPick").innerHTML += `<option>${h.name}</option>`;
-          $("enemyDraftPick").innerHTML += `<option>${h.name}</option>`;
-        });
+        fillSelect(
+          "enemyDraftPick",
+          heroes.map((h) => h.name),
+        );
+        ["search", "roleFilter", "laneFilter", "tierFilter"].forEach((id) =>
+          $(id).addEventListener("input", renderHeroes),
+        );
+        renderHeroes();
+        renderTier();
+        renderFav();
+        renderItems();
       }
-
-      function renderHeroes() {
+      function fillSelect(id, arr) {
+        $(id).innerHTML = arr.map((x) => `<option>${x}</option>`).join("");
+      }
+      function heroCard(h) {
+        return `<article class="card"><div class="avatar">${h.name[0]}</div><div class="row"><span class="chip">${h.role}</span><span class="chip gold">Tier ${h.tier}</span></div><div class="name">${h.name}</div><div class="meta">${h.role} • ${h.lane}<br>Winrate ${h.winrate}% • Pick ${h.pick}%<br>${h.emblem} • ${h.talent}</div><div class="chips"><button class="mini" onclick="toggleFav('${h.name.replaceAll("'", "\\'")}')">${favorites.includes(h.name) ? "★ Favorited" : "☆ Favorite"}</button><span class="chip">${h.winrate}% WR</span></div><div class="chips"><span class="chip">Hero Counter</span>${h.counters.map((c) => `<span class="chip red">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Item Counter</span>${h.itemCounters.map((c) => `<span class="chip green">${c}</span>`).join("")}</div><div class="chips"><span class="chip">Full Build</span>${h.build.map((c) => `<span class="chip green">${c}</span>`).join("")}</div></article>`;
+      }
+      function filtered() {
         const q = $("search").value.toLowerCase(),
-          r = $("role").value,
-          l = $("lane").value,
-          t = $("tier").value;
-        const data = heroes.filter((h) => {
-          const c = cData(h);
-          const text =
-            `${h.name} ${h.role} ${h.lane} ${h.tier} ${h.winrate} ${c.heroes.join(" ")} ${c.items.join(" ")} ${emblemFor(h)}`.toLowerCase();
-          return (
-            text.includes(q) &&
-            (r === "all" || h.role === r) &&
-            (l === "all" || h.lane === l) &&
-            (t === "all" || h.tier === t)
-          );
-        });
-        $("heroGrid").innerHTML =
-          data.map(cardHero).join("") ||
-          `<div class="card"><h3>Data tidak ditemukan</h3><p class="small">Coba keyword lain.</p></div>`;
+          r = $("roleFilter").value,
+          l = $("laneFilter").value,
+          t = $("tierFilter").value;
+        return heroes.filter(
+          (h) =>
+            (r === "Semua Role" || h.role === r) &&
+            (l === "Semua Lane" || h.lane === l) &&
+            (t === "Semua Tier" || h.tier === t) &&
+            JSON.stringify(h).toLowerCase().includes(q),
+        );
       }
-
-      function renderTier(role = "All") {
-        const roles = ["All", ...unique(heroes.map((h) => h.role))];
-        $("tierTabs").innerHTML = roles
+      function renderHeroes() {
+        const data = filtered();
+        $("heroGrid").innerHTML = data.length
+          ? data.map(heroCard).join("")
+          : '<div class="empty">Hero tidak ditemukan.</div>';
+      }
+      function renderTier() {
+        $("tierBox").innerHTML = ["S", "A", "B", "C"]
           .map(
-            (x) =>
-              `<button class="tab ${x === role ? "active" : ""}" onclick="renderTier('${x}')">${x}</button>`,
+            (t) =>
+              `<div class="panel"><h3>Tier ${t}</h3><div class="grid">${heroes
+                .filter((h) => h.tier === t)
+                .slice(0, 12)
+                .map(heroCard)
+                .join("")}</div></div>`,
           )
           .join("");
-        const data = heroes
-          .filter((h) => role === "All" || h.role === role)
-          .sort(
-            (a, b) => a.tier.localeCompare(b.tier) || b.winrate - a.winrate,
-          );
-        $("tierGrid").innerHTML = data.slice(0, 32).map(cardHero).join("");
       }
-
-      function runAIRecommendation() {
-        const h = heroes.find((x) => x.name === $("enemyHero").value);
-        const c = cData(h);
-        $("aiResult").innerHTML =
-          `<h3>Counter untuk ${h.name}</h3><p class="small">${h.role} • ${h.lane} • Winrate ${h.winrate}%</p><div class="chips"><span class="tag">Hero Counter</span>${c.heroes.map((x) => `<span class="chip counter">${x}</span>`).join("")}</div><div class="chips"><span class="tag">Item Counter</span>${c.items.map((x) => `<span class="chip item">${x}</span>`).join("")}</div><br/><p class="notice">${c.note}</p>`;
-      }
-
-      function toggleFavorite(name) {
-        favorites = isFav(name)
+      function toggleFav(name) {
+        favorites = favorites.includes(name)
           ? favorites.filter((x) => x !== name)
           : [...favorites, name];
-        localStorage.setItem("mlbbFavorites", JSON.stringify(favorites));
+        localStorage.setItem("mlbbFav", JSON.stringify(favorites));
+        $("favCount").textContent = favorites.length;
         renderHeroes();
-        renderFavorites();
-        updateStats();
+        renderFav();
       }
-
-      function renderFavorites() {
+      function renderFav() {
+        $("favCount").textContent = favorites.length;
         const data = heroes.filter((h) => favorites.includes(h.name));
         $("favoriteGrid").innerHTML = data.length
-          ? data.map(cardHero).join("")
-          : `<div class="card"><h3>Belum ada favorite</h3><p class="small">Klik tombol ★ Favorite di kartu hero.</p></div>`;
+          ? data.map(heroCard).join("")
+          : '<div class="empty">Belum ada hero favorit.</div>';
       }
-
-      function addDraftPick() {
-        const name = $("draftPick").value;
-        if (draft.length >= 5) return alert("Draft maksimal 5 hero.");
-        if (draft.includes(name)) return alert("Hero sudah masuk draft.");
-        draft.push(name);
-        localStorage.setItem("mlbbDraft", JSON.stringify(draft));
-        renderDraft();
+      function runCounter() {
+        const h = heroes.find((x) => x.name === $("enemyHero").value);
+        const rec = heroes
+          .filter((x) => roleCounter[h.role].includes(x.role))
+          .slice(0, 6);
+        $("counterResult").innerHTML =
+          `<h3>Counter untuk ${h.name}</h3><p class="sub">Role lawan: ${h.role} • Lane: ${h.lane}</p><div class="chips"><span class="chip">Hero Counter</span>${rec.map((x) => `<span class="chip red">${x.name}</span>`).join("")}</div><div class="chips"><span class="chip">Item Counter</span>${h.itemCounters.map((x) => `<span class="chip green">${x}</span>`).join("")}</div><div class="chips"><span class="chip">Build Aman</span>${rec[0].build.map((x) => `<span class="chip green">${x}</span>`).join("")}</div>`;
       }
-      function clearDraft() {
-        draft = [];
-        localStorage.setItem("mlbbDraft", JSON.stringify(draft));
+      function addDraft() {
+        const name = $("draftHero").value,
+          team = $("draftTeam").value === "Blue Team" ? "blue" : "red",
+          action = $("draftAction").value;
+        if (!draft[team].some((x) => x.name === name))
+          draft[team].push({ name, action });
         renderDraft();
       }
       function renderDraft() {
-        const data = heroes.filter((h) => draft.includes(h.name));
-        $("draftSlots").innerHTML = [0, 1, 2, 3, 4]
-          .map(
-            (i) =>
-              `<div class="draft-slot"><span>${data[i] ? data[i].name : "Slot " + (i + 1)}</span><strong>${data[i] ? data[i].role : "-"}</strong></div>`,
-          )
-          .join("");
-        const roles = data.map((h) => h.role);
-        const missing = [
-          "Tank",
-          "Marksman",
-          "Mage",
-          "Fighter",
-          "Assassin",
-        ].filter((r) => !roles.includes(r));
-        const avg = data.length
-          ? (data.reduce((s, h) => s + h.winrate, 0) / data.length).toFixed(1)
-          : 0;
-        $("draftAnalysis").innerHTML =
-          `<h3>Draft Analysis</h3><p class="small">Average static winrate: ${avg}%</p><div class="chips">${roles.map((r) => `<span class="chip">${r}</span>`).join("")}</div><br/><p class="notice">${missing.length ? "Draft masih kurang: " + missing.join(", ") : "Draft sudah cukup seimbang untuk teamfight."}</p>`;
+        $("blueDraft").innerHTML =
+          draft.blue
+            .map((x) => `<div class="slot">${x.action}: <b>${x.name}</b></div>`)
+            .join("") || '<div class="empty">Belum ada pick/ban.</div>';
+        $("redDraft").innerHTML =
+          draft.red
+            .map((x) => `<div class="slot">${x.action}: <b>${x.name}</b></div>`)
+            .join("") || '<div class="empty">Belum ada pick/ban.</div>';
       }
-
-      /* === DRAFT COUNTER HERO === */
+      function resetDraft() {
+        draft = { blue: [], red: [] };
+        renderDraft();
+      }
       function addEnemyDraft() {
-        const name = $("enemyDraftPick").value;
-        if (enemyDraft.length >= 5) return alert("Maksimal 5 hero lawan.");
-        if (enemyDraft.includes(name))
-          return alert("Hero sudah ada di daftar lawan.");
-        enemyDraft.push(name);
-        localStorage.setItem("mlbbEnemyDraft", JSON.stringify(enemyDraft));
+        const n = $("enemyDraftPick").value;
+        if (!enemyDraft.includes(n)) enemyDraft.push(n);
         renderEnemyDraft();
       }
-      function removeEnemyDraft(name) {
-        enemyDraft = enemyDraft.filter((n) => n !== name);
-        localStorage.setItem("mlbbEnemyDraft", JSON.stringify(enemyDraft));
-        renderEnemyDraft();
-      }
-      function clearEnemyDraft() {
+      function resetEnemyDraft() {
         enemyDraft = [];
-        localStorage.setItem("mlbbEnemyDraft", JSON.stringify(enemyDraft));
         renderEnemyDraft();
-        $("draftCounterResult").innerHTML =
-          `<h3>Hasil Analisis</h3><p class="small">Masukkan hero lawan dan klik "Analisis & Cari Counter" untuk melihat rekomendasi.</p>`;
       }
       function renderEnemyDraft() {
-        const data = heroes.filter((h) => enemyDraft.includes(h.name));
-        $("enemyDraftSlots").innerHTML = [0, 1, 2, 3, 4]
-          .map((i) => {
-            if (data[i])
-              return `<div class="enemy-slot"><span>${data[i].name} <span style="font-size:11px;opacity:0.6">${data[i].role}</span></span><button class="remove-btn" onclick="removeEnemyDraft('${data[i].name}')">✕</button></div>`;
-            return `<div class="enemy-slot"><span style="opacity:0.4">Slot ${i + 1}</span><span>-</span></div>`;
-          })
+        $("enemyDraftList").innerHTML = enemyDraft
+          .map((n) => `<span class="chip red">${n}</span>`)
           .join("");
+        let enemy = enemyDraft.map((n) => heroes.find((h) => h.name === n));
+        let rec = [...new Set(enemy.flatMap((h) => h.counters))].slice(0, 8);
+        let itemsRec = [...new Set(enemy.flatMap((h) => h.itemCounters))].slice(
+          0,
+          8,
+        );
+        $("draftCounterResult").innerHTML = enemyDraft.length
+          ? `<h3>Rekomendasi Counter Draft</h3><div class="chips"><span class="chip">Ambil Hero</span>${rec.map((x) => `<span class="chip red">${x}</span>`).join("")}</div><div class="chips"><span class="chip">Prioritas Item</span>${itemsRec.map((x) => `<span class="chip green">${x}</span>`).join("")}</div>`
+          : '<div class="empty">Belum ada hero musuh.</div>';
       }
-
-      function analyzeDraftCounter() {
-        if (enemyDraft.length === 0)
-          return alert("Masukkan minimal 1 hero lawan.");
-        const enemyHeroes = heroes.filter((h) => enemyDraft.includes(h.name));
-        const enemyRoles = enemyHeroes.map((h) => h.role);
-
-        /* Hitung frekuensi role lawan */
-        const roleFreq = {};
-        enemyRoles.forEach((r) => {
-          roleFreq[r] = (roleFreq[r] || 0) + 1;
-        });
-
-        /* Skor setiap hero kita berdasarkan counter terhadap seluruh lawan */
-        const scored = heroes.map((h) => {
-          let score = 0;
-          enemyHeroes.forEach((eh) => {
-            const rc = roleCounters[eh.role];
-            if (rc.heroes.includes(h.name)) score += 3;
-            /* Bonus spesifik counter */
-            if (counterBonus[h.name] && counterBonus[h.name][eh.role])
-              score += counterBonus[h.name][eh.role];
-            /* Bonus tier */
-            if (h.tier === "S") score += 1;
-            else if (h.tier === "A") score += 0.5;
-            /* Bonus winrate */
-            score += h.winrate / 50;
-            /* Penalty jika role sama (kurang beragam) */
-            if (h.role === eh.role) score -= 0.5;
-          });
-          return { ...h, score: Math.round(score * 10) / 10 };
-        });
-
-        /* Jangan rekomendasikan hero yang sama dengan lawan */
-        const filtered = scored.filter((h) => !enemyDraft.includes(h.name));
-
-        /* Urutkan dari skor tertinggi */
-        filtered.sort((a, b) => b.score - a.score);
-
-        /* Ambil top 10 */
-        const top10 = filtered.slice(0, 10);
-        const maxScore = top10[0] ? top10[0].score : 1;
-
-        /* Hitung item counter yang paling dibutuhkan */
-        const itemFreq = {};
-        enemyHeroes.forEach((eh) => {
-          const rc = roleCounters[eh.role];
-          rc.items.forEach((it) => {
-            itemFreq[it] = (itemFreq[it] || 0) + 1;
-          });
-        });
-        const topItems = Object.entries(itemFreq)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 6);
-
-        /* Analisis role lawan */
-        const roleAnalysis = Object.entries(roleFreq)
-          .sort((a, b) => b[1] - a[1])
-          .map(([r, c]) => `<span class="chip counter">${r} x${c}</span>`)
-          .join("");
-
-        /* Strategi */
-        const strategies = [];
-        if (roleFreq["Assassin"])
-          strategies.push("Lawan punya assassin — siapkan CC dan anti-burst.");
-        if (roleFreq["Marksman"])
-          strategies.push(
-            "Lawan punya marksman — jangan biarkan late game, tekan early.",
-          );
-        if (roleFreq["Mage"])
-          strategies.push(
-            "Lawan punya mage — siapkan magic defense dan timing engage.",
-          );
-        if (roleFreq["Tank"])
-          strategies.push(
-            "Lawan punya tank — bawa penetration dan true damage.",
-          );
-        if (roleFreq["Fighter"])
-          strategies.push(
-            "Lawan punya fighter — bawa anti-heal dan jangan duel panjang.",
-          );
-        if (roleFreq["Support"])
-          strategies.push(
-            "Lawan punya support — fokus pick-off sebelum teamfight.",
-          );
-        if (!strategies.length)
-          strategies.push(
-            "Komposisi lawan terlihat seimbang, fokus pada counter per-role.",
-          );
-
-        /* Deteksi kelemahan draft lawan */
-        const allRoles = ["Tank", "Marksman", "Mage", "Fighter", "Assassin"];
-        const enemyMissing = allRoles.filter((r) => !enemyRoles.includes(r));
-        let weaknessText = "";
-        if (enemyMissing.length > 0)
-          weaknessText = `Kelemahan draft lawan: tidak ada ${enemyMissing.join(", ")}. Manfaatkan celah ini.`;
-        else
-          weaknessText =
-            "Draft lawan tampak lengkap. Fokus pada counter per-individu.";
-
-        /* Render */
-        $("draftCounterResult").innerHTML = `
-          <h3>Hasil Analisis Draft Counter</h3>
-          <p class="small">Menganalisis ${enemyHeroes.length} hero lawan...</p>
-          <br/>
-          <div class="chips"><span class="tag">Komposisi Lawan</span>${roleAnalysis}</div>
-          <br/>
-          <p class="notice red">${weaknessText}</p>
-          <br/>
-          <h3>Top 10 Hero Counter</h3>
-          <p class="small">Diurutkan berdasarkan skor efektivitas menghadapi seluruh hero lawan.</p>
-          <br/>
-          ${top10
-            .map((h, i) => {
-              const pct = Math.min(100, Math.round((h.score / maxScore) * 100));
-              const medal =
-                i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
-              return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <span style="font-weight:1000;font-size:15px">${medal} ${h.name}</span>
-                  <span class="tag ${tierClass(h.tier)}" style="margin-left:8px">Tier ${h.tier}</span>
-                  <span class="chip" style="margin-left:6px">${h.role}</span>
-                </div>
-                <div style="text-align:right">
-                  <div class="counter-score" style="color:${pct > 75 ? "var(--green)" : pct > 50 ? "var(--gold)" : "var(--muted)"}">${h.score}</div>
-                </div>
-              </div>
-              <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
-              <p class="small" style="margin-top:4px">WR ${h.winrate}% • Pick ${h.pickrate}% • ${h.lane}</p>
-            </div>`;
-            })
-            .join("")}
-          <br/>
-          <h3>Item Counter Prioritas</h3>
-          <div class="chips">${topItems.map(([name, cnt]) => `<span class="chip item">${name} (x${cnt})</span>`).join("")}</div>
-          <br/>
-          <h3>Strategi Draft</h3>
-          ${strategies.map((s) => `<p class="notice green" style="margin-top:8px">• ${s}</p>`).join("")}
-        `;
-      }
-
       function renderItems() {
-        $("itemGrid").innerHTML = items
-          .map(
-            (i) =>
-              `<article class="card"><span class="tag">${i.type}</span><h3>${i.name}</h3><p class="small">${i.use}</p></article>`,
-          )
+        $("itemList").innerHTML = items
+          .map((x) => `<span class="chip green">${x}</span>`)
+          .join("");
+        $("emblemList").innerHTML = [...emblems, ...talents]
+          .map((x) => `<span class="chip">${x}</span>`)
           .join("");
       }
-
-      function updateStats() {
-        $("heroCount").textContent = heroes.length;
-        $("itemCount").textContent = items.length;
-        $("favCount").textContent = favorites.length;
-      }
-
-      setupOptions();
-      ["search", "role", "lane", "tier"].forEach((id) =>
-        $(id).addEventListener(
-          id === "search" ? "input" : "change",
-          renderHeroes,
-        ),
-      );
-      renderHeroes();
-      renderTier();
-      runAIRecommendation();
+      init();
       renderDraft();
       renderEnemyDraft();
-      renderFavorites();
-      renderItems();
-      updateStats();
     </script>
   </body>
 </html>
