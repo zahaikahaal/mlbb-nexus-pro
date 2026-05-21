@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MLBB Nexus Pro | AI Counter, Draft, Tier List & Database</title>
+    <meta
+      name="description"
+      content="MLBB Nexus Pro by Kael Husein Haekal: hero database, AI counter recommendation, draft simulator, tier list, static winrate, favorite hero, patch notes, dan database lokal."
+    />
+    <style>
+      :root {
+        --bg: #06101f;
+        --bg2: #0b1f3a;
+        --card: rgba(255, 255, 255, 0.075);
+        --card2: rgba(255, 255, 255, 0.045);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #edf7ff;
+        --muted: #a8bed4;
+        --blue: #50a7ff;
+        --violet: #8b5cf6;
+        --gold: #f7c948;
+        --red: #fb7185;
+        --green: #34d399;
+        --cyan: #67e8f9;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Arial,
+          sans-serif;
+        background:
+          radial-gradient(
+            circle at 15% 4%,
+            rgba(80, 167, 255, 0.28),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at 85% 0%,
+            rgba(139, 92, 246, 0.22),
+            transparent 34%
+          ),
+          linear-gradient(180deg, var(--bg), var(--bg2));
+        color: var(--text);
+        min-height: 100vh;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      .container {
+        width: min(1240px, 92%);
+        margin: auto;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(6, 16, 31, 0.82);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(18px);
+      }
+      .nav-in {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 950;
+      }
+      .badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--blue), var(--violet));
+        box-shadow: 0 12px 40px rgba(80, 167, 255, 0.32);
+      }
+      .links {
+        display: flex;
+        gap: 16px;
+        color: var(--muted);
+        font-weight: 850;
+        font-size: 13px;
+      }
+      .links a:hover {
+        color: white;
+      }
+      .hero {
+        padding: 68px 0 36px;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .pill {
+        display: inline-flex;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(80, 167, 255, 0.12);
+        border: 1px solid rgba(80, 167, 255, 0.28);
+        color: #cfeaff;
+        font-weight: 900;
+        font-size: 13px;
+      }
+      h1 {
+        font-size: clamp(38px, 6vw, 74px);
+        line-height: 0.95;
+        letter-spacing: -2.5px;
+        margin: 18px 0;
+      }
+      .grad {
+        background: linear-gradient(90deg, #fff, #8fd0ff, #ddd6fe);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.7;
+        max-width: 780px;
+      }
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 26px;
+      }
+      .btn {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 14px;
+        font-weight: 950;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--blue), var(--violet));
+        border: 0;
+      }
+      .btn.danger {
+        background: rgba(251, 113, 133, 0.14);
+        border-color: rgba(251, 113, 133, 0.35);
+      }
+      .panel {
+        background: linear-gradient(180deg, var(--card), var(--card2));
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      .stats {
+        display: grid;
+        gap: 12px;
+      }
+      .stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.055);
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .stat strong {
+        color: white;
+        font-size: 20px;
+      }
+      .section {
+        padding: 38px 0;
+      }
+      .head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 18px;
+      }
+      h2 {
+        font-size: 32px;
+        letter-spacing: -0.8px;
+      }
+      .desc {
+        color: var(--muted);
+        margin-top: 7px;
+        line-height: 1.6;
+      }
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr 160px 160px 160px;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.065);
+        color: white;
+        padding: 13px 14px;
+        border-radius: 15px;
+        outline: none;
+      }
+      select option {
+        background: #0a1729;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .grid.two {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, var(--card), var(--card2));
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 16px;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
+      }
+      .card:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at top right,
+          rgba(80, 167, 255, 0.14),
+          transparent 37%
+        );
+        pointer-events: none;
+      }
+      .top {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-weight: 1000;
+        background: linear-gradient(
+          135deg,
+          rgba(80, 167, 255, 0.95),
+          rgba(139, 92, 246, 0.95)
+        );
+      }
+      .hero-img-wrap {
+        height: 145px;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: linear-gradient(
+          135deg,
+          rgba(80, 167, 255, 0.22),
+          rgba(139, 92, 246, 0.18)
+        );
+        margin-bottom: 14px;
+        position: relative;
+      }
+      .hero-fallback {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        font-size: 54px;
+        font-weight: 1000;
+        color: white;
+        background:
+          radial-gradient(
+            circle at 30% 20%,
+            rgba(255, 255, 255, 0.18),
+            transparent 34%
+          ),
+          linear-gradient(
+            135deg,
+            rgba(80, 167, 255, 0.55),
+            rgba(139, 92, 246, 0.42)
+          );
+      }
+      .tag {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 999px;
+        padding: 6px 8px;
+        font-size: 11px;
+        font-weight: 950;
+        color: #dbeafe;
+      }
+      .tierS {
+        background: rgba(247, 201, 72, 0.18);
+        color: #fde68a;
+        border-color: rgba(247, 201, 72, 0.35);
+      }
+      .tierA {
+        background: rgba(52, 211, 153, 0.12);
+        color: #bbf7d0;
+        border-color: rgba(52, 211, 153, 0.28);
+      }
+      .tierB {
+        background: rgba(103, 232, 249, 0.11);
+        color: #cffafe;
+        border-color: rgba(103, 232, 249, 0.24);
+      }
+      h3 {
+        font-size: 20px;
+        margin: 12px 0 6px;
+      }
+      .small {
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 13px;
+      }
+      .chips {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 11px;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.055);
+        color: #dbeafe;
+        border-radius: 999px;
+        padding: 6px 8px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .counter {
+        background: rgba(251, 113, 133, 0.13);
+        border-color: rgba(251, 113, 133, 0.32);
+        color: #fecdd3;
+      }
+      .item {
+        background: rgba(52, 211, 153, 0.1);
+        border-color: rgba(52, 211, 153, 0.28);
+        color: #bbf7d0;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.055);
+        padding: 10px 13px;
+        border-radius: 999px;
+        font-weight: 950;
+        cursor: pointer;
+      }
+      .tab.active {
+        color: white;
+        border: 0;
+        background: linear-gradient(135deg, var(--blue), var(--violet));
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 13px;
+        background: rgba(255, 255, 255, 0.052);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+      }
+      th {
+        color: #cfeaff;
+      }
+      th:first-child,
+      td:first-child {
+        border-left: 1px solid var(--line);
+        border-radius: 14px 0 0 14px;
+        color: white;
+        font-weight: 900;
+      }
+      th:last-child,
+      td:last-child {
+        border-right: 1px solid var(--line);
+        border-radius: 0 14px 14px 0;
+      }
+      .draft-slot {
+        min-height: 54px;
+        border: 1px dashed rgba(255, 255, 255, 0.22);
+        border-radius: 16px;
+        padding: 13px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .footer {
+        margin-top: 40px;
+        padding: 34px 0;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        line-height: 1.7;
+        text-align: center;
+      }
+      .credit {
+        color: white;
+        font-weight: 1000;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .notice {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(247, 201, 72, 0.1);
+        border: 1px solid rgba(247, 201, 72, 0.25);
+        color: #fde68a;
+        line-height: 1.6;
+      }
+      .fav-btn {
+        position: relative;
+        z-index: 2;
+      }
+      .fav-on {
+        color: #facc15;
+        border-color: rgba(250, 204, 21, 0.45);
+        background: rgba(250, 204, 21, 0.12);
+      }
+      @media (max-width: 1050px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .filters {
+          grid-template-columns: 1fr 1fr;
+        }
+        .links {
+          display: none;
+        }
+      }
+      @media (max-width: 650px) {
+        .grid,
+        .grid.two,
+        .grid.three,
+        .filters {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 42px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="container nav-in">
+        <a class="brand" href="#"
+          ><span class="badge">⚔️</span><span>MLBB Nexus Pro</span></a
+        >
+        <div class="links">
+          <a href="#heroes">Heroes</a><a href="#tierlist">Tier List</a
+          ><a href="#ai">AI Counter</a><a href="#draft">Draft</a
+          ><a href="#favorites">Favorite</a><a href="#patch">Patch</a
+          ><a href="#database">Database</a>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <section class="container hero">
+        <div>
+          <span class="pill"
+            >AI Counter • Draft Simulator • Static Winrate</span
+          >
+          <h1><span class="grad">MLBB Strategy</span><br />Dashboard Pro.</h1>
+          <p class="lead">
+            Website database Mobile Legends bergaya profesional untuk mencari
+            hero, counter, tier list, static winrate, patch notes, favorite
+            hero, draft simulator, dan rekomendasi counter berbasis rule AI.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="#ai">Coba AI Counter</a
+            ><a class="btn" href="#draft">Buka Draft Simulator</a
+            ><a class="btn" href="#tierlist">Lihat Tier List</a>
+          </div>
+        </div>
+        <div class="panel stats">
+          <div class="stat">
+            <span>Total Heroes</span><strong id="heroCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>Active Items</span><strong id="itemCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>Favorite Heroes</span><strong id="favCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>Database Mode</span><strong>Local</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="heroes" class="container section">
+        <div class="head">
+          <div>
+            <h2>Hero Database</h2>
+            <p class="desc">
+              Cari berdasarkan nama hero, role, lane, tier, counter, item, atau
+              emblem.
+            </p>
+          </div>
+        </div>
+        <div class="filters">
+          <input
+            id="search"
+            placeholder="Cari hero / item / counter..."
+          /><select id="role">
+            <option value="all">Semua Role</option></select
+          ><select id="lane">
+            <option value="all">Semua Lane</option></select
+          ><select id="tier">
+            <option value="all">Semua Tier</option>
+            <option>S</option>
+            <option>A</option>
+            <option>B</option>
+          </select>
+        </div>
+        <div id="heroGrid" class="grid"></div>
+      </section>
+
+      <section id="tierlist" class="container section">
+        <div class="head">
+          <div>
+            <h2>Tier List</h2>
+            <p class="desc">
+              Tier list otomatis berdasarkan tier, winrate statis, dan role.
+            </p>
+          </div>
+        </div>
+        <div class="tabs" id="tierTabs"></div>
+        <div id="tierGrid" class="grid"></div>
+      </section>
+
+      <section id="ai" class="container section">
+        <div class="head">
+          <div>
+            <h2>AI Counter Recommendation</h2>
+            <p class="desc">
+              Pilih hero lawan, sistem akan merekomendasikan hero counter, item
+              counter, dan strategi draft.
+            </p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="panel">
+            <select id="enemyHero"></select
+            ><br /><br /><button
+              class="btn primary"
+              onclick="runAIRecommendation()"
+            >
+              Generate Counter</button
+            ><br /><br />
+            <div class="notice">
+              AI di sini adalah rule-based recommendation yang berjalan langsung
+              di browser, bukan AI server berbayar.
+            </div>
+          </div>
+          <div id="aiResult" class="panel"></div>
+        </div>
+      </section>
+
+      <section id="draft" class="container section">
+        <div class="head">
+          <div>
+            <h2>Draft Simulator</h2>
+            <p class="desc">
+              Simulasikan komposisi tim dan cek kelemahan draft.
+            </p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="panel">
+            <select id="draftPick"></select
+            ><br /><br /><button class="btn primary" onclick="addDraftPick()">
+              Tambah ke Tim</button
+            ><button class="btn danger" onclick="clearDraft()">
+              Reset Draft</button
+            ><br /><br />
+            <div id="draftSlots" class="grid"></div>
+          </div>
+          <div id="draftAnalysis" class="panel"></div>
+        </div>
+      </section>
+
+      <section id="favorites" class="container section">
+        <div class="head">
+          <div>
+            <h2>Favorite Hero</h2>
+            <p class="desc">
+              Hero favorit tersimpan di browser kamu memakai localStorage.
+            </p>
+          </div>
+        </div>
+        <div id="favoriteGrid" class="grid"></div>
+      </section>
+
+      <section id="items" class="container section">
+        <div class="head">
+          <div>
+            <h2>51 Active Items</h2>
+            <p class="desc">Item aktif untuk build dan counter matchup.</p>
+          </div>
+        </div>
+        <div id="itemGrid" class="grid"></div>
+      </section>
+
+      <section id="patch" class="container section">
+        <div class="head">
+          <div>
+            <h2>Patch Notes</h2>
+            <p class="desc">
+              Catatan update statis yang bisa kamu edit sendiri.
+            </p>
+          </div>
+        </div>
+        <div id="patchGrid" class="grid three"></div>
+      </section>
+
+      <section id="database" class="container section">
+        <div class="head">
+          <div>
+            <h2>Database Online / Local Database</h2>
+            <p class="desc">
+              Untuk sekarang database disimpan lokal di browser. Kalau mau
+              online beneran, nanti bisa disambungkan ke Firebase/Supabase.
+            </p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="panel">
+            <h3>Export Database</h3>
+            <p class="small">
+              Download data hero, item, favorite, dan draft sebagai JSON.
+            </p>
+            <br /><button class="btn primary" onclick="exportDatabase()">
+              Export JSON
+            </button>
+          </div>
+          <div class="panel">
+            <h3>Import Database</h3>
+            <p class="small">
+              Paste JSON hasil export, lalu simpan ke browser.
+            </p>
+            <br /><textarea
+              id="dbImport"
+              rows="6"
+              placeholder="Paste JSON database di sini..."
+            ></textarea
+            ><br /><br /><button class="btn" onclick="importDatabase()">
+              Import Database
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container">
+        © 2026 MLBB Nexus Pro. Fan-made database, tidak berafiliasi dengan
+        Moonton/Mobile Legends: Bang Bang.<br />Website created by
+        <span class="credit">Kael Husein Haekal</span> 🚀
+      </div>
+    </footer>
+
+    <script>
+      const heroNames =
+        "Miya|Balmond|Saber|Alice|Nana|Tigreal|Alucard|Karina|Akai|Franco|Bane|Bruno|Clint|Rafaela|Eudora|Zilong|Fanny|Layla|Minotaur|Lolita|Hayabusa|Freya|Gord|Natalia|Kagura|Chou|Sun|Alpha|Ruby|Yi Sun-shin|Moskov|Johnson|Cyclops|Estes|Hilda|Aurora|Lapu-Lapu|Vexana|Roger|Karrie|Gatotkaca|Harley|Irithel|Grock|Argus|Odette|Lancelot|Diggie|Hylos|Zhask|Helcurt|Pharsa|Lesley|Jawhead|Angela|Gusion|Valir|Martis|Uranus|Hanabi|Chang'e|Kaja|Selena|Aldous|Claude|Vale|Leomord|Lunox|Hanzo|Belerick|Kimmy|Thamuz|Harith|Minsitthar|Kadita|Faramis|Badang|Khufra|Granger|Guinevere|Esmeralda|Terizla|X.Borg|Ling|Dyrroth|Lylia|Baxia|Masha|Wanwan|Silvanna|Carmilla|Cecilion|Atlas|Popol and Kupa|Yu Zhong|Luo Yi|Benedetta|Khaleed|Barats|Brody|Yve|Mathilda|Paquito|Gloo|Beatrix|Phoveus|Natan|Aulus|Aamon|Valentina|Edith|Floryn|Yin|Melissa|Xavier|Julian|Fredrinn|Joy|Novaria|Arlott|Ixia|Nolan|Cici|Chip|Zhuxin|Suyou|Lukas|Kalea|Zetian|Obsidia|Sora|Marcel".split(
+          "|",
+        );
+      const roleMap = {
+        Tank: "Alice,Tigreal,Akai,Franco,Minotaur,Johnson,Gatotkaca,Grock,Hylos,Uranus,Belerick,Khufra,Atlas,Gloo,Edith,Fredrinn,Chip",
+        Support:
+          "Rafaela,Lolita,Estes,Diggie,Angela,Kaja,Faramis,Carmilla,Mathilda,Floryn,Kalea,Marcel",
+        Mage: "Nana,Eudora,Gord,Kagura,Cyclops,Aurora,Vexana,Odette,Zhask,Pharsa,Valir,Chang'e,Selena,Vale,Lunox,Harith,Kadita,Lylia,Cecilion,Luo Yi,Yve,Valentina,Xavier,Novaria,Zhuxin,Zetian",
+        Marksman:
+          "Miya,Bruno,Clint,Layla,Yi Sun-shin,Moskov,Karrie,Irithel,Lesley,Hanabi,Claude,Kimmy,Wanwan,Granger,Popol and Kupa,Brody,Beatrix,Natan,Melissa,Ixia,Obsidia",
+        Assassin:
+          "Saber,Karina,Alucard,Fanny,Hayabusa,Natalia,Harley,Lancelot,Helcurt,Gusion,Ling,Benedetta,Aamon,Julian,Nolan,Suyou,Sora",
+        Fighter:
+          "Balmond,Bane,Zilong,Freya,Chou,Sun,Alpha,Ruby,Hilda,Lapu-Lapu,Roger,Argus,Jawhead,Martis,Leomord,Hanzo,Thamuz,Minsitthar,Badang,Guinevere,Esmeralda,Terizla,X.Borg,Dyrroth,Baxia,Masha,Silvanna,Yu Zhong,Khaleed,Barats,Paquito,Phoveus,Aulus,Yin,Joy,Arlott,Cici,Lukas",
+      };
+      function getRole(n) {
+        for (const r in roleMap) {
+          if (roleMap[r].split(",").includes(n)) return r;
+        }
+        return "Fighter";
+      }
+      const laneByRole = {
+        Tank: "Roam",
+        Support: "Roam",
+        Mage: "Mid",
+        Marksman: "Gold",
+        Assassin: "Jungle",
+        Fighter: "EXP",
+      };
+      const heroes = heroNames.map((name, i) => {
+        const role = getRole(name);
+        const tier = i % 5 === 0 ? "S" : i % 3 === 0 ? "A" : "B";
+        const wr = (48 + ((i * 7) % 110) / 10).toFixed(1);
+        return {
+          id: i + 1,
+          name,
+          role,
+          lane: laneByRole[role],
+          tier,
+          winrate: Number(wr),
+          pickrate: Number((5 + ((i * 3) % 200) / 10).toFixed(1)),
+        };
+      });
+      const items =
+        "War Axe|Blade of Despair|Hunter Strike|Malefic Roar|Sea Halberd|Demon Hunter Sword|Corrosion Scythe|Golden Staff|Berserker's Fury|Windtalker|Haas's Claws|Endless Battle|Rose Gold Meteor|Great Dragon Spear|Blade of Heptaseas|Swift Crossbow|Magic Blade|Clock of Destiny|Lightning Truncheon|Holy Crystal|Divine Glaive|Genius Wand|Glowing Wand|Enchanted Talisman|Concentrated Energy|Blood Wings|Starlium Scythe|Feather of Heaven|Winter Crown|Ice Queen Wand|Fleeting Time|Dominance Ice|Athena Shield|Radiant Armor|Antique Cuirass|Blade Armor|Immortality|Guardian Helmet|Oracle|Cursed Helmet|Thunder Belt|Queen's Wings|Brute Force Breastplate|Twilight Armor|Tough Boots|Warrior Boots|Magic Shoes|Rapid Boots|Demon Shoes|Arcane Boots|Swift Boots"
+          .split("|")
+          .map((name, i) => ({
+            name,
+            type:
+              i < 17
+                ? "Attack"
+                : i < 31
+                  ? "Magic"
+                  : i < 44
+                    ? "Defense"
+                    : "Movement",
+            use: [
+              "Core damage",
+              "Burst counter",
+              "Anti tank",
+              "Anti heal",
+              "Survive burst",
+              "Rotation cepat",
+            ][i % 6],
+          }));
+      const patchNotes = [
+        {
+          v: "Patch 1.0",
+          t: "Launch database",
+          d: "Rilis 132 hero, 51 item, tier list, dan counter system.",
+        },
+        {
+          v: "Patch 1.1",
+          t: "AI Counter",
+          d: "Menambahkan rule-based AI untuk rekomendasi counter hero dan item.",
+        },
+        {
+          v: "Patch 1.2",
+          t: "Draft Simulator",
+          d: "Menambahkan analisis role balance, damage type, dan weakness draft.",
+        },
+      ];
+      const roleCounters = {
+        Assassin: {
+          heroes: ["Khufra", "Kaja", "Franco", "Saber", "Minsitthar"],
+          items: ["Antique Cuirass", "Winter Crown", "Immortality"],
+          note: "Gunakan instant CC, suppress, dan jangan biarkan assassin masuk backline.",
+        },
+        Marksman: {
+          heroes: ["Lolita", "Belerick", "Natalia", "Saber", "Khufra"],
+          items: ["Blade Armor", "Dominance Ice", "Wind of Nature"],
+          note: "Tekan gold lane dan paksa war sebelum late game.",
+        },
+        Mage: {
+          heroes: ["Lolita", "Chou", "Saber", "Kaja", "Natalia"],
+          items: ["Athena Shield", "Radiant Armor", "Winter Crown"],
+          note: "Tunggu mage buang skill utama sebelum engage.",
+        },
+        Tank: {
+          heroes: ["Karrie", "Lunox", "Dyrroth", "X.Borg", "Valir"],
+          items: ["Demon Hunter Sword", "Malefic Roar", "Divine Glaive"],
+          note: "Pakai penetration, true damage, dan kite frontline.",
+        },
+        Fighter: {
+          heroes: ["Valir", "Karrie", "Baxia", "Dyrroth", "Lunox"],
+          items: ["Dominance Ice", "Sea Halberd", "Antique Cuirass"],
+          note: "Kurangi sustain dan jangan duel panjang tanpa anti-heal.",
+        },
+        Support: {
+          heroes: ["Baxia", "Luo Yi", "Saber", "Natalia", "Valir"],
+          items: ["Sea Halberd", "Necklace of Durance", "Dominance Ice"],
+          note: "Prioritaskan anti-heal dan pick-off support sebelum war.",
+        },
+      };
+      let favorites = JSON.parse(localStorage.getItem("mlbbFavorites") || "[]");
+      let draft = JSON.parse(localStorage.getItem("mlbbDraft") || "[]");
+      const $ = (id) => document.getElementById(id);
+      function unique(a) {
+        return [...new Set(a)].sort();
+      }
+      function tierClass(t) {
+        return t === "S" ? "tierS" : t === "A" ? "tierA" : "tierB";
+      }
+      function emblemFor(h) {
+        return h.role === "Tank"
+          ? "Tank • Brave Smite"
+          : h.role === "Assassin"
+            ? "Assassin • Killing Spree"
+            : h.role === "Mage"
+              ? "Mage • Lethal Ignition"
+              : h.role === "Marksman"
+                ? "Marksman • Weakness Finder"
+                : h.role === "Support"
+                  ? "Support • Focusing Mark"
+                  : "Fighter • Festival of Blood";
+      }
+      function cData(h) {
+        return roleCounters[h.role] || roleCounters.Fighter;
+      }
+      function isFav(n) {
+        return favorites.includes(n);
+      }
+      function cardHero(h) {
+        const c = cData(h);
+        return `<article class="card"><div class="hero-img-wrap"><div class="hero-fallback">${h.name[0]}</div></div><div class="top"><div class="avatar">${h.name[0]}</div><span class="tag ${tierClass(h.tier)}">Tier ${h.tier}</span></div><h3>${h.name}</h3><p class="small">${h.role} • ${h.lane}<br/>Winrate ${h.winrate}% • Pick ${h.pickrate}%<br/>${emblemFor(h)}</p><div class="chips"><button class="chip fav-btn ${isFav(h.name) ? "fav-on" : ""}" onclick="toggleFavorite('${h.name}')">★ Favorite</button><span class="chip">${h.winrate}% WR</span></div><div class="chips"><span class="tag">Hero Counter</span>${c.heroes
+          .slice(0, 4)
+          .map((x) => `<span class="chip counter">${x}</span>`)
+          .join(
+            "",
+          )}</div><div class="chips"><span class="tag">Item Counter</span>${c.items.map((x) => `<span class="chip item">${x}</span>`).join("")}</div></article>`;
+      }
+      function setupOptions() {
+        unique(heroes.map((h) => h.role)).forEach(
+          (r) => ($("role").innerHTML += `<option>${r}</option>`),
+        );
+        unique(heroes.map((h) => h.lane)).forEach(
+          (l) => ($("lane").innerHTML += `<option>${l}</option>`),
+        );
+        heroes.forEach((h) => {
+          $("enemyHero").innerHTML += `<option>${h.name}</option>`;
+          $("draftPick").innerHTML += `<option>${h.name}</option>`;
+        });
+      }
+      function renderHeroes() {
+        const q = $("search").value.toLowerCase(),
+          r = $("role").value,
+          l = $("lane").value,
+          t = $("tier").value;
+        const data = heroes.filter((h) => {
+          const c = cData(h);
+          const text =
+            `${h.name} ${h.role} ${h.lane} ${h.tier} ${h.winrate} ${c.heroes.join(" ")} ${c.items.join(" ")} ${emblemFor(h)}`.toLowerCase();
+          return (
+            text.includes(q) &&
+            (r === "all" || h.role === r) &&
+            (l === "all" || h.lane === l) &&
+            (t === "all" || h.tier === t)
+          );
+        });
+        $("heroGrid").innerHTML =
+          data.map(cardHero).join("") ||
+          `<div class="card"><h3>Data tidak ditemukan</h3><p class="small">Coba keyword lain.</p></div>`;
+      }
+      function renderTier(role = "All") {
+        const roles = ["All", ...unique(heroes.map((h) => h.role))];
+        $("tierTabs").innerHTML = roles
+          .map(
+            (x) =>
+              `<button class="tab ${x === role ? "active" : ""}" onclick="renderTier('${x}')">${x}</button>`,
+          )
+          .join("");
+        const data = heroes
+          .filter((h) => role === "All" || h.role === role)
+          .sort(
+            (a, b) => a.tier.localeCompare(b.tier) || b.winrate - a.winrate,
+          );
+        $("tierGrid").innerHTML = data.slice(0, 32).map(cardHero).join("");
+      }
+      function runAIRecommendation() {
+        const h = heroes.find((x) => x.name === $("enemyHero").value);
+        const c = cData(h);
+        $("aiResult").innerHTML =
+          `<h3>Counter untuk ${h.name}</h3><p class="small">${h.role} • ${h.lane} • Winrate ${h.winrate}%</p><div class="chips"><span class="tag">Hero Counter</span>${c.heroes.map((x) => `<span class="chip counter">${x}</span>`).join("")}</div><div class="chips"><span class="tag">Item Counter</span>${c.items.map((x) => `<span class="chip item">${x}</span>`).join("")}</div><br/><p class="notice">${c.note}</p>`;
+      }
+      function toggleFavorite(name) {
+        favorites = isFav(name)
+          ? favorites.filter((x) => x !== name)
+          : [...favorites, name];
+        localStorage.setItem("mlbbFavorites", JSON.stringify(favorites));
+        renderHeroes();
+        renderFavorites();
+        updateStats();
+      }
+      function renderFavorites() {
+        const data = heroes.filter((h) => favorites.includes(h.name));
+        $("favoriteGrid").innerHTML = data.length
+          ? data.map(cardHero).join("")
+          : `<div class="card"><h3>Belum ada favorite</h3><p class="small">Klik tombol ★ Favorite di kartu hero.</p></div>`;
+      }
+      function addDraftPick() {
+        const name = $("draftPick").value;
+        if (draft.length >= 5) return alert("Draft maksimal 5 hero.");
+        if (draft.includes(name)) return alert("Hero sudah masuk draft.");
+        draft.push(name);
+        localStorage.setItem("mlbbDraft", JSON.stringify(draft));
+        renderDraft();
+      }
+      function clearDraft() {
+        draft = [];
+        localStorage.setItem("mlbbDraft", JSON.stringify(draft));
+        renderDraft();
+      }
+      function renderDraft() {
+        const data = heroes.filter((h) => draft.includes(h.name));
+        $("draftSlots").innerHTML = [0, 1, 2, 3, 4]
+          .map(
+            (i) =>
+              `<div class="draft-slot"><span>${data[i] ? data[i].name : "Slot " + (i + 1)}</span><strong>${data[i] ? data[i].role : "-"}</strong></div>`,
+          )
+          .join("");
+        const roles = data.map((h) => h.role),
+          missing = ["Tank", "Marksman", "Mage", "Fighter", "Assassin"].filter(
+            (r) => !roles.includes(r),
+          );
+        const avg = data.length
+          ? (data.reduce((s, h) => s + h.winrate, 0) / data.length).toFixed(1)
+          : 0;
+        $("draftAnalysis").innerHTML =
+          `<h3>Draft Analysis</h3><p class="small">Average static winrate: ${avg}%</p><div class="chips">${roles.map((r) => `<span class="chip">${r}</span>`).join("")}</div><br/><p class="notice">${missing.length ? "Draft masih kurang: " + missing.join(", ") : "Draft sudah cukup seimbang untuk teamfight."}</p>`;
+      }
+      function renderItems() {
+        $("itemGrid").innerHTML = items
+          .map(
+            (i) =>
+              `<article class="card"><span class="tag">${i.type}</span><h3>${i.name}</h3><p class="small">${i.use}</p></article>`,
+          )
+          .join("");
+      }
+      function renderPatch() {
+        $("patchGrid").innerHTML = patchNotes
+          .map(
+            (p) =>
+              `<article class="card"><span class="tag">${p.v}</span><h3>${p.t}</h3><p class="small">${p.d}</p></article>`,
+          )
+          .join("");
+      }
+      function updateStats() {
+        $("heroCount").textContent = heroes.length;
+        $("itemCount").textContent = items.length;
+        $("favCount").textContent = favorites.length;
+      }
+      function exportDatabase() {
+        const data = {
+          heroes,
+          items,
+          favorites,
+          draft,
+          patchNotes,
+          exportedAt: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "mlbb-nexus-database.json";
+        a.click();
+      }
+      function importDatabase() {
+        try {
+          const data = JSON.parse($("dbImport").value);
+          if (Array.isArray(data.favorites)) {
+            favorites = data.favorites;
+            localStorage.setItem("mlbbFavorites", JSON.stringify(favorites));
+          }
+          if (Array.isArray(data.draft)) {
+            draft = data.draft;
+            localStorage.setItem("mlbbDraft", JSON.stringify(draft));
+          }
+          renderFavorites();
+          renderDraft();
+          updateStats();
+          alert("Database berhasil diimport.");
+        } catch (e) {
+          alert("JSON tidak valid.");
+        }
+      }
+      setupOptions();
+      ["search", "role", "lane", "tier"].forEach((id) =>
+        $(id).addEventListener(
+          id === "search" ? "input" : "change",
+          renderHeroes,
+        ),
+      );
+      renderHeroes();
+      renderTier();
+      runAIRecommendation();
+      renderDraft();
+      renderFavorites();
+      renderItems();
+      renderPatch();
+      updateStats();
+    </script>
+  </body>
+</html>
